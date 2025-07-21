@@ -42,7 +42,7 @@ export default class CodeGenerator {
 
         let res = "[\n";
         res += visitor.rules
-            .map(r => `${il}{"match": ${r.match}, "replace": "${r.replace}", "when": ${r.when}}`)
+            .map(r => `${il}{"match": ${r.match}, "replace": "${r.replace.replaceAll('"', '\\"')}", "when": ${r.when}}`)
             .join(',\n');
         res += `\n${is}]`;
 

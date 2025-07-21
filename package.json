@@ -1,7 +1,7 @@
 {
   "name": "skrypt-web",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A demo web implementation of the Skrypt language",
   "homepage": "https://yabobjonez.github.io/skrypt",
   "repository": "https://github.com/yaBobJonez/skrypt-web",

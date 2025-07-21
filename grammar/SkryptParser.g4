@@ -39,7 +39,7 @@ rhs         : VOID      # Nothing
             ;
 
 file        : line* EOF ;
-line        : statement LF
+line        : statement LF?
             | LF
             ;
 statement   : option | template | ruleTr ;
