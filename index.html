@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Skrypt</title>
+    <link rel="stylesheet" href="node_modules/@olton/metroui/lib/metro.css"/>
+    <link rel="stylesheet" href="node_modules/@olton/metroui/lib/icons.css"/>
+    <style>
+        .cm-editor {
+            max-height: 100%;
+            border: 1px var(--input-border-color) solid;
+            border-radius: var(--input-border-radius);
+        }
+        .cm-editor.cm-focused {
+            outline: 1px var(--input-border-color-hover) solid;
+        }
+        textarea { resize: none; }
+    </style>
+</head>
+<body class="h-100-vh">
+<div data-role="splitter" class="h-100">
+    <!-- Left Pane -->
+    <div class="d-flex flex-column">
+        <div class="toolbar p-3 flex-wrap">
+            <input type="file" accept="text/*" id="uploadBtn" hidden />
+            <button class="tool-button" onclick="document.getElementById('uploadBtn').click()">
+                <span class="mif-file-upload"></span>
+            </button>
+            <button class="tool-button" id="downloadBtn"><span class="mif-file-download"></span></button>
+            <button class="tool-button text-button" id="parseBtn">Parse</button>
+            <button class="tool-button text-button" id="transformBtn">Transform</button>
+            <button class="tool-button text-button" id="generateJSBtn">Generate JS</button>
+            <a class="tool-button text-button" href="Skrypt.js" download>Download lib</a>
+        </div>
+        <div id="editor" class="pt-1 pb-3 px-3 flex-grow overflow"></div>
+    </div>
+
+    <!-- Right Pane -->
+    <div>
+        <ul data-role="tabs" data-expand="true" class="overflow">
+            <li><a href="#tabAbout">About</a></li>
+            <li><a href="#tabLearn">Learn</a></li>
+            <li><a href="#tabTry">Try</a></li>
+            <li><a href="#tabDownload">Feedback</a></li>
+            <li><a href="#tabLicenses">Legal</a></li>
+        </ul>
+        <div class="tabs-targets h-100 pb-10 overflow">
+
+            <div id="tabAbout" class="p-6">
+                <h1 class="text-center">Skrypt</h1>
+                <p class="text-center text-bold my-2">Rev 1.0</p>
+                <hr />
+                <p class="indent text-just">
+                    Skrypt is a simple yet powerful declarative text transformation language, designed to easily
+                    transcribe, transliterate, or transform text in flexible ways, helping one avoid learning regular
+                    expressions and scripting languages. Whether you're adapting text between writing systems, cleaning
+                    up data, or restructuring it, Skrypt allows you to focus on what needs to be changed, rather than
+                    how to do it.
+                </p>
+                <p class="indent text-just">
+                    Skrypt lets you define rules that match specific patterns and their respective replacements. These
+                    can range from simple expressions like "replace A by B" to complex conditional substitutions with
+                    lookarounds and quantifiers. Under the hood, Skrypt compiles your rules into regular expressions
+                    and uses a special algorithm to resolve conflicts that you can export to include in your own
+                    websites or applications.
+                </p>
+                <p class="indent text-just">
+                    You can see a rules sample file in the Editor. This website is a concept demonstration to help you
+                    get a sense of the language and its capabilities. You can read an exhaustive documentation, test
+                    your rules by instantly transforming input text, and generate a JavaScript function online. Keep in
+                    mind, the project is still WIP and may contain bugs — please leave your Feedback ;)
+                </p>
+            </div>
+
+            <div id="tabLearn">
+                <div data-role="accordion">
+                    <div class="frame">
+                        <div class="heading">Using the Editor</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                This web interface is divided by a slider and contains the <em>Editor</em> area to the
+                                left and a few <em>tabs</em> to the right, as you can see. The Editor component is
+                                powered by CodeMirror 6 and offers custom-made syntax highlighting, basic linting,
+                                autocompletion, and hover tooltips to aid you in writing your rules. <kbd>Tab</kbd>
+                                serves its traditional function of advancing the cursor to the next tab stop. The
+                                Editor supports all the common keybindings, such as <kbd>Ctrl-Z</kbd>, <kbd>
+                                Ctrl-Shift-Right</kbd>, <kbd>Shift-Home</kbd>, <kbd>Ctrl-Backspace</kbd>, as well as a
+                                few worth listing:
+                            </p>
+                            <ul>
+                                <li><kbd>Shift-Alt-Up</kbd> — copy line up</li>
+                                <li><kbd>Shift-Alt-Down</kbd> — copy line down</li>
+                                <li><kbd>Ctrl-L</kbd> — select line</li>
+                                <li><kbd>Ctrl-I</kbd> — select parent element</li>
+                                <li><kbd>Ctrl-Shift-K</kbd> — delete line</li>
+                                <li><kbd>Ctrl-Shift-\</kbd> — move cursor to matching bracket</li>
+                                <li><kbd>Ctrl-/</kbd> — toggle comment (comment/uncomment selection/line)</li>
+                                <li>
+                                    <kbd>Ctrl-M</kbd> — toggle tab-focus mode (allows you to use Tab to navigate out
+                                    of the Editor
+                                </li>
+                            </ul>
+                            <p class="px-4">
+                                The <em>Toolbar</em> above the Editor has buttons to Open (upload) a file, Save
+                                (download) it, Parse the rules, Transform input text by applying the rules (see the Try
+                                tab), and Generate a JavaScript function, as described on the About tab. <em>Parsing
+                                </em> refers to the syntactic analysis of your rules by the computer to make them ready
+                                to be further applied or generate a function upon. To avoid the waste of resources, <u>
+                                it is not done automatically</u>, so make sure to press [Parse] every time you've done
+                                making some changes to the rules!
+                            </p>
+                            <p class="px-4 pb-4">
+                                Finally, you can test your rules on a text by writing it (or pasting) in the Input field
+                                on the Try tab and pressing [Transform]. As the current version of Skrypt is still yet
+                                to be perfected, it may not be very performant with large inputs.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">General</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                <strong>Skrypt</strong> is a character-based text transformation language. It operates
+                                by matching sequences of characters in text and replacing them according to the
+                                specified formal rules. A <em>character</em> is any single written symbol — a letter,
+                                digit, punctuation mark, emoji, shape, or even a space. A <em>string</em> is simply a
+                                sequence of such characters.
+                            </p>
+                            <p class="px-4">
+                                Any text after <code>#</code> to the end of a line is considered a <em>comment</em>,
+                                which is ignored by Skrypt and can be used to describe or annotate your rules. You are
+                                free to use them to leave notes for yourself or others reading or working on your rules.
+                                In fact, it may be useful to comment out a rule to temporarily disable it.
+                            </p>
+                            <p class="px-4">
+                                To include special characters like <code>→</code> or <code>~</code> as regular ones,
+                                place a backslash <code>\</code> in front of them (this is called <em>escaping</em> in
+                                computer science). For example, <code>\~</code> matches a literal tilde. There are also
+                                some escape sequences with a special meaning:
+                            </p>
+                            <ul>
+                                <li><code>\r</code>: carriage return, used before <code>\n</code> on Windows</li>
+                                <li><code>\n</code>: newline</li>
+                                <li><code>\t</code>: tab</li>
+                                <li><code>\v</code>: vertical whitespace</li>
+                                <li><code>\d</code>: any digit (Arabic numeral); equivalent to <code>&lt;0123456789&gt;
+                                    </code></li>
+                                <li><code>\D</code>: any non-digit </li>
+                                <li><code>\s</code>: any whitespace character</li>
+                                <li><code>\S</code>: any non-whitespace character</li>
+                                <li><code>\0</code>: null character</li>
+                            </ul>
+                            <p class="px-4 pb-4">
+                                Furthermore, arbitrary Unicode characters can be written as <code>\uXXXX</code>, where
+                                XXXX is a hexadecimal number that represents the character's Unicode code point. This
+                                can be useful when you want to use a character that is hard to see or may be displayed
+                                incorrectly on the screen.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">Options</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                <em>Options</em> let you control whether certain rules are applied. Use <code>@ name =
+                                value</code> to define an option. For example: <code>@ soft = true</code>. If a rule
+                                ends with <code>? option</code>, it is only active when that option is enabled (equals
+                                "true"). These options are also made available as parameters when Skrypt generates a
+                                JavaScript function.
+                            </p>
+                            <p class="px-4 pb-4">
+                                In Skrypt, statements (options, templates, rules) are separated by newlines. Since
+                                whitespaces are normally ignored, it doesn't matter whether you write <code>@a=b</code>,
+                                <code>@a = b</code>, or even <code>@ a =b</code> — they will be treated the same.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">Templates</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                <em>Templates</em> (also may be called constants or even variables) are reusable
+                                left-hand side expressions, defined with <code>% name = expression</code>. For instance:
+                                <code>% vowel = &lt;aeiou&gt;</code>. You can reference (<em>substitute</em>) a template by
+                                writing its name inside curly braces: <code>{vowel}</code>. This helps you avoid
+                                repeating the same long expressions across multiple rules.
+                            </p>
+                            <p class="px-4 pb-4">
+                                The special right-hand side value <code>{}</code> (written also as <code>∅</code>)
+                                is called <em>void</em> and means "nothing", used to remove a match completely from the
+                                text. For example, <code>A → ∅</code> deletes all 'A's from the text.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">Rules</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                A <em>rule</em> is the main "building block" that specifies what to replace and how. It
+                                consists of one or more <em>patterns</em>, separated by commas (and optionally
+                                newlines), that form a matching expression (LHS) and a replacement string (RHS):
+                                <code>FROM → TO</code> (or <code>FROM -> TO</code>).
+                            </p>
+                            <div class="mx-4 remark d-block info">
+                                <span class="mif-info icon"></span>
+                                Skrypt takes care of the <a href="https://en.wikipedia.org/wiki/Bleeding_order">
+                                bleeding</a> and the <a href="https://en.wikipedia.org/wiki/Feeding_order">feeding
+                                order</a> problems. If there are conflicting rules, the longest and the ones defined
+                                earlier are prioritized.
+                            </div>
+                            <p class="px-4">
+                                As you should already know, it's possible to filter some rules out by adding an option
+                                check after them. However, each pattern can also include word delimiters and
+                                non-capturing pre- and post-conditions using square brackets:
+                            </p>
+                            <ul>
+                                <li><code>[X]A</code>: replace A only if it comes after X — lookbehind</li>
+                                <li><code>A[X]</code>: replace A only if it comes before X — lookahead</li>
+                                <li><code>[X]A[Y]</code>: replace A only if it is between X and Y</li>
+                            </ul>
+                            <p class="px-4">
+                                Use <code>_</code> within an expression to match any letter. The word boundary marks
+                                (delimiters) <code>/</code> can be explained as follows:
+                            </p>
+                            <ul>
+                                <li><code>/A</code>: replace A only if it's at the start of a word</li>
+                                <li><code>A/</code>: replace A only if it's at the end of a word</li>
+                                <li><code>/A/</code>: replace only standalone A</li>
+                            </ul>
+                            <p class="px-4 pb-4">
+                                These use your <code>letters</code> template if defined; otherwise, they match any
+                                character that is considered a letter in Unicode.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">Operators</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                Expressions are composed of one or more <em>terms</em> — smallest inseparable units,
+                                like strings, charsets, <code>_</code> or substitutions. <em>Operators</em> are used to
+                                build complex expressions:
+                            </p>
+                            <table class="table striped my-4">
+                                <thead>
+                                <tr>
+                                    <th>Operator</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>A|B</td>
+                                    <td>Or</td>
+                                    <td>Either expression A or B</td>
+                                </tr>
+                                <tr>
+                                    <td>&lt;abc&gt;</td>
+                                    <td>Charset</td>
+                                    <td>Any of the characters between &lt;&gt;; roughly, a shorthand for <code>a|b|c</code></td>
+                                </tr>
+                                <tr>
+                                    <td>~A</td>
+                                    <td>Not</td>
+                                    <td>Negates term A; e.g. <code>~&lt;ab&gt;</code> or <code>[~A]</code>.</td>
+                                </tr>
+                                <tr>
+                                    <td>(A)</td>
+                                    <td>Group</td>
+                                    <td>Overrides precedence; e.g. <code>a(b|c)</code></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="mx-4 remark d-block warning">
+                                <span class="mif-warning icon"></span>
+                                Due to the underlying implementation of Skrypt that doesn't have a Not operator, a
+                                negated character <code>~a</code> it will be interpreted as an inverted set containing
+                                only this single character <code>~&lt;a&gt;</code>. It's recommended to avoid matching
+                                "anything but this character" for clarity and performance.
+                            </div>
+                            <p class="px-4">
+                                Precedence from strongest to weakest is:
+                            </p>
+                            <ol>
+                                <li>Character concatenation (implicit)</li>
+                                <li>Not (<code>~</code>)</li>
+                                <li>Quantification (<code>?</code>, <code>+</code>, <code>*</code>)</li>
+                                <li>Expression concatenation (implicit)</li>
+                                <li>Or (<code>|</code>)</li>
+                            </ol>
+                            <p class="px-4">
+                                Use grouping <code>()</code> if you need to change the order of operations, like in
+                                math. <em>Quantifiers</em> denote repetition of terms:
+                            </p>
+                            <ul>
+                                <li><code>X?</code>: zero or one X (optional X)</li>
+                                <li><code>X+</code>: one or more X</li>
+                                <li><code>X*</code>: zero or more X</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading">Generating JavaScript</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                Skrypt internally uses a custom UPLv1.0-licensed algorithm to transform the input by
+                                sequentially applying all rules and resolving match conflicts in-place, prioritizing
+                                <em>the leftmost, longest, and rules defined earlier</em>. This algorithm along with
+                                a function to build the result strings are provided in a self-contained small library
+                                that you may obtain by pressing [Download lib]. The Universal Permissive License
+                                version 1.0 is highly similar to MIT, but also provides an express patent grant and
+                                lets you include only a short-form link to the License instead of the full text.
+                            </p>
+                            <p class="px-4 pb-4">
+                                The language offers you a way to compile your rules into an array of objects that can
+                                be fed into the algorithm and generate a JavaScript function to transform input using
+                                the very same library with options available as parameters. To do that, just press the
+                                respective button on the Toolbar after having parsed the rules. Such function will
+                                import the library file named Skrypt.js, which you should put into the same directory.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabTry" class="h-100">
+                <div data-role="splitter" data-split="horizontal" class="h-100">
+                    <!-- Top Pane -->
+                    <div class="card w-100 m-0">
+                        <div class="card-header">Input</div>
+                        <div class="card-content h-100">
+                            <textarea id="inputText"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Pane -->
+                    <div class="card w-100 m-0">
+                        <div class="card-header">Output</div>
+                        <div class="card-content h-100">
+                            <textarea id="outputText" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabDownload" class="h-100 p-3">
+                <!--div data-role="directive" data-directive="info">
+                    The desktop app is still in development, please stay tuned ;)
+                </div-->
+                <iframe
+                        src="https://docs.google.com/forms/d/e/1FAIpQLSeVh9bVQsDE4QxgKaQ1ahqh46EhQ8wyGxz6zHiwR2_cJxi_vw/viewform?embedded=true"
+                        class="w-100 h-100">
+                    Loading the form…
+                </iframe>
+            </div>
+
+            <div id="tabLicenses">
+                <p class="px-4 pt-4 text-center">
+                    Skrypt © 2025 Mykhailo Stetsiuk
+                </p>
+                <p class="px-4">
+                    The Skrypt runtime library is available under the <a href="legal/skrypt-lib.txt">Universal
+                    Permissive License, Version 1.0</a>, as described in the Generating JavaScript section of the docs.
+                    The Skrypt engine (includes ANTLR grammars, visitors and code generator) is provided under the
+                    <a href="legal/LICENSE.txt">Apache License, Version 2.0</a>. The engine is written using the
+                    antlr-ng Parser Generator, licensed under the <a href="legal/antlr4ng.txt">Revised BSD License</a>.
+                    The Skrypt language support for CodeMirror
+                    (<a href="https://www.npmjs.com/package/codemirror-lang-skrypt">npm</a>) is distributed under the
+                    <a href="legal/skrypt-codemirror.txt">MIT License</a>.
+                    The source code of the library and the engine are hosted in the
+                    <a href="https://github.com/yaBobJonez/skrypt-web">GitHub repository</a> of this website under
+                    /public/Skrypt.js and /src respectively.
+                </p>
+                <p class="px-4">
+                    All other materials on this website are currently copyrighted (provided without an explicit
+                    license), but you are free to share, quote, and distribute the content in other ways, examine and
+                    learn from it.
+                </p>
+                <p class="px-4">
+                    Note that the website is built upon the following third-party components:
+                </p>
+                <ul class="px-4">
+                    <li>
+                        TypeScript — a programming language that adds static typing to JavaScript;
+                        <a href="legal/typescript.txt">Apache 2.0</a>
+                    </li>
+                    <li>
+                        Vite — a modern frontend build tool;
+                        <a href="legal/vite.md">MIT</a>
+                    </li>
+                    <li>
+                        Metro UI — a framework for creating web application interfaces;
+                        <a href="legal/olton-metroui.txt">MIT</a>
+                    </li>
+                    <li>
+                        CodeMirror — a code editor component;
+                        <a href="legal/codemirror.txt">MIT</a>
+                    </li>
+                    <li>
+                        @types/node — TypeScript definitions for Node.js;
+                        <a href="legal/types-node.txt">MIT</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="module" src="node_modules/@olton/metroui/lib/metro.js"></script>
+<script type="module" src="src/Editor.js"></script>
+</body>
+</html>

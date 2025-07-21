@@ -1,0 +1,63 @@
+# Latin Ukrainian
+# ===============
+
+@ expandShch    = true
+@ separateW     = true
+@ alternativeG  = false
+@ assimilation  = false
+
+% letters   = <аеєиіоуюябвгґджзїйклмнпрстфхцчшщь>
+% fC        = <бвгґджзклмнпрстфхцчшщ>
+
+а   →   a
+б   →   b
+[~{fC}]в[{fC}],
+[<аеєиіоуюя>]в/ →   w   ? separateW
+в               →   v
+г   →   g   ? alternativeG
+г   →   h
+ґ   →   g̀   ? alternativeG
+ґ   →   g
+д   →   d
+е   →   e
+[{fC}]є     →   ie
+[й]є        →   e
+є           →   je
+ж[с|ц]  →   z   ? assimilation
+ж       →   ž
+з[ш|ж|ч]    →   ž   ? assimilation
+з           →   z
+и   →   y
+і   →   i
+ї   →   ji
+й   →   j
+к   →   k
+л   →   l
+м   →   m
+н   →   n
+о   →   o
+п   →   p
+р   →   r
+с[ш]    →   š   ? assimilation
+с       →   s
+т[ч|ш]  →   č   ? assimilation
+т       →   t
+у   →   u
+ф   →   f
+х   →   ch
+ц   →   c
+ч[с|ц]  →   c   ? assimilation
+ч       →   č
+ш[с|ц]  →   s   ? assimilation
+ш       →   š
+щ   →   šč  ? expandShch
+щ   →   ŝ
+[т]ь[с] →   ∅
+ь       →   \u0301
+[{fC}]ю     →   iu
+[й]ю        →   u
+ю           →   ju
+[{fC}]я     →   ia
+[й]я        →   a
+я           →   ja
+'|ʼ|’   →   ∅

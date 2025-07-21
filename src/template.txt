@@ -1,0 +1,8 @@
+import {collectMatches, buildString} from "./Skrypt.js"
+
+export function {{function}}(input, {{options}}) {
+    const rules = {{rules}};
+    const slots = collectMatches(input, rules);
+    const output = buildString(input, slots);
+    return output;
+}

@@ -1,0 +1,31 @@
+{
+  "name": "skrypt-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A demo web implementation of the Skrypt language",
+  "homepage": "https://yabobjonez.github.io/skrypt",
+  "repository": "https://github.com/yaBobJonez/skrypt-web",
+  "bugs": "https://github.com/yaBobJonez/skrypt-web/issues",
+  "author": "Mykhailo Stetsiuk",
+  "license": "SEE LICENSE IN public/",
+  "type": "module",
+  "scripts": {
+    "antlr": "antlr-ng --lib grammar -o lib --exact-output-dir -v true -l false grammar/SkryptParser.g4 grammar/SkryptLexer.g4",
+    "dev": "tsc && vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/view": "^6.38.0",
+    "@olton/metroui": "^5.1.9",
+    "@types/node": "^24.0.13",
+    "antlr4ng": "^3.0.16",
+    "codemirror": "^6.0.2",
+    "codemirror-lang-skrypt": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  }
+}

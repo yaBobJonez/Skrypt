@@ -1,0 +1,78 @@
+# Cyrillic Polish
+# ===============
+
+@ useShcha = true
+@ cyrillicYot = false
+@ ukrainianYe = false
+@ ukrainianY = false
+@ phonetic = true
+
+a	→	а
+ą[<kgtdc>|d<zż>|cz]		→	он
+ą[<pb>]					→	ом
+ą[<śźć>|dź|<szc>i|dzi]	→	онь
+ą[<lł>]					→	о
+ą						→	оў	? phonetic
+ą						→	он
+b	→	б
+ch	→	х
+cz, ci[<aąeęioóuy>], c[i]	→	ч
+c	→	ц
+ć	→	чь
+d	→	д
+e	→	е
+ę[<fwszżh>|<sr>z|ch]	→	еў	? phonetic
+ę[<fwszżh>|<sr>z|ch]	→	ен
+ę[<kgtdc>|d<zż>|cz]		→	ен
+ę[<pb>]					→	ем
+ę[<śźć>|dź|<szc>i|dzi]	→	ень
+ę						→	е
+f	→	ф
+g	→	г
+h	→	х
+ia	→	я
+ie	→	є	? ukrainianYe
+ie	→	ѐ
+ii	→	йі	? cyrillicYot
+ii	→	јі
+io	→	ё
+iu	→	ю
+i[y]	→	{}
+i[<ąęó>]	→	ь
+i	→	і
+j	→	й	? cyrillicYot
+j	→	ј
+k	→	к
+l	→	л
+ł	→	ў
+m	→	м
+n	→	н
+ń	→	нь
+o	→	о
+ó	→	у
+p	→	п
+q	→	к
+[<kpth>]rzcz,
+[<kpth>]rzci[<aąeęioóuy>],
+[<kpth>]rzc[i]	→	щ	? useShcha
+[<kpth>]rzć	→	щь	? useShcha
+[<kpth>]rz	→	ш
+rz			→	ж
+r	→	р
+szcz,
+szci[<aąeęioóuy>],
+szc[i]	→	щ	? useShcha
+szć	→	щь	? useShcha
+sz, si[<aąeęioóuy>], s[i]	→	ш
+s	→	с
+ść	→	щь	? useShcha
+ś	→	шь
+t	→	т
+u	→	у
+v, w	→	в
+x	→	кс
+y	→	и	? ukrainianY
+y	→	ы
+zi[<aąeęioóuy>], z[i], ż	→	ж
+z	→	з
+ź	→	жь
