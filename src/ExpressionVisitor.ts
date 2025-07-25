@@ -35,14 +35,16 @@ import {
 export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     templates = new Map<string, ExprContext>();
 
-    visitLhs_chars = (ctx: Lhs_charsContext) => {
-        return ctx.Lhs_CHAR().map(c => {
+    collectChars = (ctx: Lhs_charsContext): string[] =>
+        ctx.Lhs_CHAR().map(c => {
             const text = c.getText();
             if (/^\\[^urntvdDsS0(){}[\]|/?+*\-\\]$/.test(text)) return text.slice(1);
-            if (/^[.\-]$/.test(text)) return `\\${text}`;
+            if (/^[.\-^$]$/.test(text)) return `\\${text}`;
             return text;
-        }).join('');
-    }
+        });
+    visitLhs_chars = (ctx: Lhs_charsContext) =>
+        this.collectChars(ctx).join('');
+
     visitRhs_chars = (ctx: Rhs_charsContext) => {
         return ctx.Rhs_CHAR().map(c => {
             const text = c.getText();
@@ -63,11 +65,13 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
 
     visitPattern = (ctx: PatternContext) => {
         let match = "";
+        if (ctx._pre) match += `(?<=`;
         if (ctx._start) match += `(?<!${this.getAnyLetter()})`;
-        if (ctx._pre) match += `(?<=${this.visit(ctx._pre)})`;
+        if (ctx._pre) match += `${this.visit(ctx._pre)})`;
         match += this.visit(ctx._inner!);
-        if (ctx._post) match += `(?=${this.visit(ctx._post)})`;
+        if (ctx._post) match += `(?=${this.visit(ctx._post)}`;
         if (ctx._end) match += `(?!${this.getAnyLetter()})`;
+        if (ctx._post) match += `)`;
         return match;
     }
 
@@ -75,10 +79,13 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
         ctx.term().map(t => this.visit(t)).join('');
 
     visitOr = (ctx: OrContext) => {
+        const charset = this.collectCharsetExpr(ctx);
+        if (charset)
+            return `[${this.buildSet(charset)}]` ;
         if (ctx.parent instanceof OrContext || ctx.parent instanceof GroupContext)
-            return `${this.visit(ctx._l!)}|${this.visit(ctx._r!)}`;
+            return `${this.visit(ctx._l!)}|${this.visit(ctx._r!)}` ;
         else
-            return `(?:${this.visit(ctx._l!)}|${this.visit(ctx._r!)})`;
+            return `(?:${this.visit(ctx._l!)}|${this.visit(ctx._r!)})` ;
     }
 
     visitGroup = (ctx: GroupContext) =>
@@ -88,10 +95,13 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
         if (c instanceof TermsContext)
             return c.term().map(t => this.negateTerm(t)).join('');
         if (c instanceof OrContext) {
+            const charset = this.collectCharsetExpr(c);
+            if (charset)
+                return `[^${this.buildSet(charset)}]` ;
             if (c.parent instanceof OrContext || c.parent instanceof GroupContext)
-                return `${this.negateExpr(c._l!)}|${this.negateExpr(c._r!)}`;
+                return `${this.negateExpr(c._l!)}|${this.negateExpr(c._r!)}` ;
             else
-                return `(?:${this.negateExpr(c._l!)}|${this.negateExpr(c._r!)})`;
+                return `(?:${this.negateExpr(c._l!)}|${this.negateExpr(c._r!)})` ;
         }
         throw new Error(`Negating ${c.getText()} is unsupported.`);
     }
@@ -101,7 +111,7 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
         if (c instanceof NotContext)
             return this.visit(c.term())!;
         if (c instanceof OrGroupContext)
-            return `[^${this.visit(c.lhs_chars())}]`;
+            return `[^${this.buildSet(this.collectCharsetTerm(c)!)}]`;
         if (c instanceof SubstitutionContext) {
             const template = this.getTemplate(c);
             return this.negateExpr(template);
@@ -131,8 +141,32 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
             return `(?:${this.visit(ctx.term())})${op}`;
     }
 
+    collectCharsetExpr = (ctx: ExprContext): Set<string> | null => {
+        if (ctx instanceof TermsContext && ctx.term().length === 1)
+            return this.collectCharsetTerm(ctx.term()[0]);
+        if (ctx instanceof OrContext) {
+            const left = this.collectCharsetExpr(ctx._l!);
+            const right = this.collectCharsetExpr(ctx._r!);
+            if (left && right) return left.union(right);
+        }
+        return null;
+    }
+    collectCharsetTerm = (ctx: TermContext): Set<string> | null => {
+        if (ctx instanceof GroupContext)
+            return this.collectCharsetExpr(ctx.expr());
+        if (ctx instanceof OrGroupContext)
+            return new Set(this.collectChars(ctx.lhs_chars()));
+        if (ctx instanceof LhsStringContext && ctx.lhs_chars().Lhs_CHAR().length === 1)
+            return new Set([this.visit(ctx)!]);
+        if (ctx instanceof SubstitutionContext)
+            return this.collectCharsetExpr(this.getTemplate(ctx));
+        return null;
+    }
+    buildSet = (set: Set<string>) =>
+        Array.from(set).join('');
+
     visitOrGroup = (ctx: OrGroupContext) =>
-        `[${this.visit(ctx.lhs_chars())}]` ;
+        `[${this.buildSet(this.collectCharsetTerm(ctx)!)}]` ;
 
     getTemplate = (ctx: SubstitutionContext): ExprContext => {
         const name = this.visit(ctx.lhs_chars())!;

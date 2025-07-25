@@ -39,7 +39,7 @@ WS              : [ \r\t]+      -> skip ;
 Lhs_CHAR        : '\\u' HEX HEX HEX HEX             // Leave
                 | '\\' [rntvdDsS0(){}[\]|/?+*\-\\]  // Leave
                 | '\\' ~[\r\n\t]                    // Strip
-                | [.\-]                             // Escape
+                | [.\-^$]                           // Escape
                 | .                                 // Leave
                 ;
 fragment HEX    : [0-9a-fA-F] ;
