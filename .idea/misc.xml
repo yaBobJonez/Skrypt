@@ -11,7 +11,6 @@
           <option name="pkg" value="" />
           <option name="language" value="" />
           <option name="generateListener" value="false" />
-          <option name="generateVisitor" value="true" />
         </PerGrammarGenerationSettings>
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/grammar/SkryptLexer.g4" />
@@ -20,7 +19,7 @@
           <option name="encoding" value="" />
           <option name="pkg" value="" />
           <option name="language" value="" />
-          <option name="generateVisitor" value="true" />
+          <option name="generateListener" value="false" />
         </PerGrammarGenerationSettings>
       </list>
     </option>

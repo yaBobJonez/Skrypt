@@ -49,7 +49,7 @@
 
             <div id="tabAbout" class="p-6">
                 <h1 class="text-center">Skrypt</h1>
-                <p class="text-center text-bold my-2">Rev 1.0</p>
+                <p class="text-center text-bold my-2">Rev 2.0</p>
                 <hr />
                 <p class="indent text-just">
                     Skrypt is a simple yet powerful declarative text transformation language, designed to easily
@@ -151,11 +151,83 @@
                                 <li><code>\S</code>: any non-whitespace character</li>
                                 <li><code>\0</code>: null character</li>
                             </ul>
-                            <p class="px-4 pb-4">
+                            <p class="px-4">
                                 Furthermore, arbitrary Unicode characters can be written as <code>\uXXXX</code>, where
                                 XXXX is a hexadecimal number that represents the character's Unicode code point. This
                                 can be useful when you want to use a character that is hard to see or may be displayed
                                 incorrectly on the screen.
+                            </p>
+                            <div class="mx-4 remark d-block warning">
+                                <span class="mif-warning icon"></span>
+                                As of revision 2.0, in order to prevent breaking changes, the dollar sign <code>$
+                                </code>, dot <code>.</code>, and quotation marks <code>' "</code> are reserved for
+                                future uses and must be escaped.
+                            </div>
+                            <p class="px-4 pb-4">
+                                <span class="badge soft-emerald">New in 2.0</span>
+                                Alternatively, you can use <em>`raw strings`</em> that preserve most characters as
+                                they are written (literally), including most escape sequences (except for <code>\r\n\t
+                                </code>), all the operators, and brackets.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="frame">
+                        <div class="heading"><span class="badge soft-emerald">New in 2.0</span> Directives</div>
+                        <div class="content">
+                            <p class="px-4 pt-4">
+                                <em>Directives</em> are processing instructions that specify how certain statements
+                                should be interpreted or modify the code generation process. They can be used to define
+                                multiple functions in one file, split rules into several application stages, execute
+                                additional code, etc. They start with an exclamation mark and may contain zero or more
+                                values, separated by commas, after an equals sign: <code>! name = value1, value2</code>.
+                            </p>
+                            <table class="table striped my-4">
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Values</th>
+                                    <th>Description</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>case sensitive</td>
+                                    <td>None</td>
+                                    <td>Marks following rules to match case strictly</td>
+                                </tr>
+                                <tr>
+                                    <td>case insensitive</td>
+                                    <td>None</td>
+                                    <td>Marks following rules to ignore case when matching</td>
+                                </tr>
+                                <tr>
+                                    <td>function</td>
+                                    <td>name</td>
+                                    <td>Defines a new function or renames the current one if it's empty</td>
+                                </tr>
+                                <tr>
+                                    <td>stage</td>
+                                    <td>None</td>
+                                    <td>Declares a new transformation stage within a function</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <p class="px-4">
+                                <em>Functions</em> make it possible to define many independent sets of transformations
+                                in a single file. Each function contains its own options (the function's parameters),
+                                templates, and rules. A Skrypt file always defines at least one function, implicitly
+                                called "transform" by default. Using the <code>! function</code> directive before any
+                                rules are defined in the current one doesn't leave it empty and create a new one,
+                                renaming the function instead. That means you can easily change the name of the first
+                                (default) function using the directive at the beginning of a file.
+                            </p>
+                            <p class="px-4 pb-4">
+                                As Skrypt was designed primarily for transliteration, in most cases, one would expect
+                                rules to be resolved and applied <em>simultaneously</em>, such that <code>A → B</code>
+                                and <code>B → C</code> result in "AB" being transformed to "BC", not "CC". However,
+                                sometimes you may need to apply a few subsets of rules <em>consecutively</em>, e.g. to
+                                replace all As by Bs, and only then all Bs by Cs. This is where you use the <code>!
+                                stage</code> directive — to separate such consecutive subsets of simultaneous rules.
                             </p>
                         </div>
                     </div>
@@ -163,16 +235,25 @@
                         <div class="heading">Options</div>
                         <div class="content">
                             <p class="px-4 pt-4">
-                                <em>Options</em> let you control whether certain rules are applied. Use <code>@ name =
-                                value</code> to define an option. For example: <code>@ soft = true</code>. If a rule
-                                ends with <code>? option</code>, it is only active when that option is enabled (equals
-                                "true"). These options are also made available as parameters when Skrypt generates a
-                                JavaScript function.
+                                <em>Options</em> let you control whether certain rules are applied by making them
+                                conditional. They are also made available as <em>parameters</em> when Skrypt generates
+                                JavaScript functions. Use <code>@ name = value</code> to define an option, for example:
+                                <code>@ soft = true</code>.
+                            </p>
+                            <p class="px-4">
+                                Marking a rule as dependent on the values of some options is done by appending a
+                                so-called <em>When clause</em> to it. <span class="badge soft-emerald">New in 2.0</span>
+                                There are three operators related to options: <code>~</code> not, <code>&</code> and,
+                                <code>|</code> or. Such a clause starts with a question mark and contains an expression
+                                with options. For instance, <code>? ~silentH & nasal</code> at the end of a rule would
+                                mean it should be active only when the option "silentH" is Not enabled (equals false)
+                                And "nasal" is enabled (equals true).
                             </p>
                             <p class="px-4 pb-4">
-                                In Skrypt, statements (options, templates, rules) are separated by newlines. Since
-                                whitespaces are normally ignored, it doesn't matter whether you write <code>@a=b</code>,
-                                <code>@a = b</code>, or even <code>@ a =b</code> — they will be treated the same.
+                                In Skrypt, statements (directives, options, templates, rules) are separated by newlines.
+                                Since whitespaces are normally ignored, it doesn't matter whether you write <code>@a=b
+                                </code>, <code>@a = b</code>, or even <code>@ a =b</code> — they will be treated the
+                                same.
                             </p>
                         </div>
                     </div>
@@ -200,37 +281,52 @@
                                 A <em>rule</em> is the main "building block" that specifies what to replace and how. It
                                 consists of one or more <em>patterns</em>, separated by commas (and optionally
                                 newlines), that form a matching expression (LHS) and a replacement string (RHS):
-                                <code>FROM → TO</code> (or <code>FROM -> TO</code>).
+                                <code>FROM → TO</code> (or <code>FROM -> TO</code>). Matching patterns are
+                                case-insensitive by default.
                             </p>
                             <div class="mx-4 remark d-block info">
                                 <span class="mif-info icon"></span>
                                 Skrypt takes care of the <a href="https://en.wikipedia.org/wiki/Bleeding_order">
                                 bleeding</a> and the <a href="https://en.wikipedia.org/wiki/Feeding_order">feeding
-                                order</a> problems. If there are conflicting rules, the longest and the ones defined
-                                earlier are prioritized.
+                                order</a> problems. If there are conflicting rules, the first one that matches is used.
+                                <span class="badge soft-emerald">Changed in 2.0</span> For definiteness, the length of
+                                rules no longer has any effect on their priority, so in many cases you should write the
+                                longest rules first.
                             </div>
                             <p class="px-4">
                                 As you should already know, it's possible to filter some rules out by adding an option
-                                check after them. However, each pattern can also include word delimiters and
-                                non-capturing pre- and post-conditions using square brackets:
+                                check after them. However, each pattern can also include <span class="badge
+                                soft-emerald">Changed in 2.0</span> any number of word delimiters and non-capturing pre-
+                                and post-conditions using square brackets before and after the primary expression:
                             </p>
                             <ul>
-                                <li><code>[X]A</code>: replace A only if it comes after X — lookbehind</li>
-                                <li><code>A[X]</code>: replace A only if it comes before X — lookahead</li>
-                                <li><code>[X]A[Y]</code>: replace A only if it is between X and Y</li>
+                                <li><code>[X]A</code>: match A only if it comes after X — lookbehind</li>
+                                <li><code>A[X]</code>: match A only if it comes before X — lookahead</li>
+                                <li><code>[X]A[Y]</code>: match A only if it is between X and Y</li>
                             </ul>
                             <p class="px-4">
                                 Use <code>_</code> within an expression to match any letter. The word boundary marks
                                 (delimiters) <code>/</code> can be explained as follows:
                             </p>
                             <ul>
-                                <li><code>/A</code>: replace A only if it's at the start of a word</li>
-                                <li><code>A/</code>: replace A only if it's at the end of a word</li>
-                                <li><code>/A/</code>: replace only standalone A</li>
+                                <li><code>/A</code>: match A only if it's at the start of a word</li>
+                                <li><code>A/</code>: match A only if it's at the end of a word</li>
+                                <li><code>/A/</code>: match only standalone A</li>
                             </ul>
-                            <p class="px-4 pb-4">
+                            <p class="px-4">
                                 These use your <code>letters</code> template if defined; otherwise, they match any
-                                character that is considered a letter in Unicode.
+                                character that is considered a letter (or a non-letter) character in Unicode.
+                            </p>
+                            <p class="px-4 pb-4">
+                                <span class="badge soft-emerald">New in 2.0</span> A <em>block</em> is a construction
+                                (statement) that can wrap several rules with common options and/or a repetitive
+                                expression. It starts like this: <code>? when_clause, expression:</code> and terminates
+                                with a semicolon <code>;</code>. A block must contain either a <code>? when_clause:
+                                </code>, an <code>expression:</code>, or both with a comma in between. The expression,
+                                if provided, can be substituted using the caret <code>^</code> within the rules.
+                                The options of a block are combined with rule-local options using the And operator.
+                                Blocks can also be nested. You may read them as "if [when clause options], with
+                                [expression], do".
                             </p>
                         </div>
                     </div>
@@ -254,22 +350,27 @@
                                 <tr>
                                     <td>A|B</td>
                                     <td>Or</td>
-                                    <td>Either expression A or B</td>
+                                    <td>Either expression A or B; charset union</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge soft-emerald">New in 2.0</span> A-B</td>
+                                    <td>Difference</td>
+                                    <td>Charset difference</td>
                                 </tr>
                                 <tr>
                                     <td>&lt;abc&gt;</td>
                                     <td>Charset</td>
-                                    <td>Any of the characters between &lt;&gt;; roughly, a shorthand for <code>a|b|c</code></td>
+                                    <td>Any of the characters between &lt;&gt;, roughly, a shorthand for <code>a|b|c</code></td>
                                 </tr>
                                 <tr>
                                     <td>~A</td>
                                     <td>Not</td>
-                                    <td>Negates term A; e.g. <code>~&lt;ab&gt;</code> or <code>[~A]</code>.</td>
+                                    <td>Negates term A, e.g. <code>~&lt;ab&gt;</code> or <code>[~A]</code>.</td>
                                 </tr>
                                 <tr>
                                     <td>(A)</td>
                                     <td>Group</td>
-                                    <td>Overrides precedence; e.g. <code>a(b|c)</code></td>
+                                    <td>Overrides precedence, e.g. <code>a(b|c)</code></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -285,9 +386,10 @@
                             </p>
                             <ol>
                                 <li>Character concatenation (implicit)</li>
+                                <li>Difference (<code>-</code>)</li>
                                 <li>Not (<code>~</code>)</li>
-                                <li>Quantification (<code>?</code>, <code>+</code>, <code>*</code>)</li>
-                                <li>Expression concatenation (implicit)</li>
+                                <li>Quantification (<code>?</code>, <code>+</code>, <code>*</code>, <code>×</code>)</li>
+                                <li>Term concatenation (implicit)</li>
                                 <li>Or (<code>|</code>)</li>
                             </ol>
                             <p class="px-4">
@@ -298,6 +400,18 @@
                                 <li><code>X?</code>: zero or one X (optional X)</li>
                                 <li><code>X+</code>: one or more X</li>
                                 <li><code>X*</code>: zero or more X</li>
+                                <li>
+                                    <span class="badge soft-emerald">New in 2.0</span>
+                                    <code>X×n</code>: exactly n times; <code>×</code> can also be written as <code>*=</code>
+                                </li>
+                                <li>
+                                    <span class="badge soft-emerald">New in 2.0</span>
+                                    <code>X×n+</code>: n or more times
+                                </li>
+                                <li>
+                                    <span class="badge soft-emerald">New in 2.0</span>
+                                    <code>X×n-m</code>: from n to m times (both ends inclusive)
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -307,7 +421,7 @@
                             <p class="px-4 pt-4">
                                 Skrypt internally uses a custom UPLv1.0-licensed algorithm to transform the input by
                                 sequentially applying all rules and resolving match conflicts in-place, prioritizing
-                                <em>the leftmost, longest, and rules defined earlier</em>. This algorithm along with
+                                <em>the leftmost matches and rules defined earlier</em>. This algorithm along with
                                 a function to build the result strings are provided in a self-contained small library
                                 that you may obtain by pressing [Download lib]. The Universal Permissive License
                                 version 1.0 is highly similar to MIT, but also provides an express patent grant and

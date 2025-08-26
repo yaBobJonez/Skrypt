@@ -11,68 +11,132 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 
 import {SkryptParserVisitor} from "../lib/SkryptParserVisitor.js";
 import {
-    NotContext,
+    AnyLetterContext,
+    ExprContext,
     GroupContext,
+    Lhs_charsContext,
+    LhsRawStringContext,
+    LhsStringContext,
+    LhsCharsContext,
+    LhsContext,
+    NumberContext,
+    LookaroundContext,
+    NotContext,
+    NothingContext,
     OrContext,
     OrGroupContext,
+    DifferenceContext,
+    PatternContext,
     QuantificationContext,
-    SubstitutionContext,
-    LhsStringContext,
-    NothingContext,
-    RhsStringContext,
-    AnyLetterContext,
-    LhsContext,
-    SkryptParser,
-    ExprContext,
-    Lhs_charsContext,
+    QuantSimpleContext,
+    QuantNtoMContext,
+    QuantNOrMoreContext,
+    QuantExactlyNContext,
     Rhs_charsContext,
-    PatternContext, TermContext, TermsContext
+    RhsRawStringContext,
+    RhsStringContext,
+    RhsCharsContext,
+    SubstitutionContext,
+    AnchorContext,
+    TermContext,
+    TermsContext,
+    WhenGroupContext,
+    WhenNotContext,
+    WhenAndContext,
+    WhenOrContext,
+    WhenCharsContext
 } from "../lib/SkryptParser.js";
+import {ParserRuleContext} from "antlr4ng";
 
 export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     templates = new Map<string, ExprContext>();
+    blockExpr: ExprContext[] = [];
 
-    collectChars = (ctx: Lhs_charsContext): string[] =>
-        ctx.Lhs_CHAR().map(c => {
-            const text = c.getText();
-            if (/^\\[^urntvdDsS0(){}[\]|/?+*\-\\]$/.test(text)) return text.slice(1);
-            if (/^[.\-^$]$/.test(text)) return `\\${text}`;
-            return text;
-        });
-    visitLhs_chars = (ctx: Lhs_charsContext) =>
-        this.collectChars(ctx).join('');
+    private readonly onError;
 
-    visitRhs_chars = (ctx: Rhs_charsContext) => {
-        return ctx.Rhs_CHAR().map(c => {
-            const text = c.getText();
-            if (/^\\u[0-9a-fA-F]{4}$/.test(text))
-                return String.fromCharCode(parseInt(text.slice(2), 16));
-            if (text === "\\r") return "\r";
-            if (text === "\\n") return "\n";
-            if (text === "\\t") return "\t";
-            if (text === "\\0") return "\0";
-            if (text === "\\\\") return "\\";
-            if (/^\\/.test(text)) return text.slice(1);
-            return text;
-        }).join('');
+    constructor(handler: (line: number, column: number, msg: string) => void) {
+        super();
+        this.onError = handler;
     }
+    error = (ctx: ParserRuleContext, msg: string) => {
+        this.onError(ctx.start!.line, ctx.start!.column, msg);
+        return "!PARSE ERROR!";
+    }
+
+    collectChars = (ctx: Lhs_charsContext | Rhs_charsContext) => {
+        if (ctx instanceof LhsRawStringContext) {
+            return ctx.String_CHAR().map(t => {
+                const text = t.getText();
+                if (/^\\[rnt]$/.test(text)) return text;
+                if (text === "\\`") return text.slice(1);
+                if (/^[.^$(){}[\]|/?+*\\]$/.test(text)) return `\\${text}`;
+                return text;
+            });
+        } else if (ctx instanceof LhsStringContext) {
+            return ctx._chars.map(t => {
+                const text = t.text!;
+                if (/^\\u[0-9a-fA-F]{4}$/.test(text)) return text;
+                if (/^\\[^rntvdDsS0^$.(){}[\]|/?+*\\]$/.test(text)) return text.slice(1);
+                return text;
+            });
+        } else if (ctx instanceof RhsRawStringContext) {
+            return ctx.String_CHAR().map(t => {
+                const text = t.getText();
+                if (text === "\\r") return "\r";
+                if (text === "\\n") return "\n";
+                if (text === "\\t") return "\t";
+                if (text === "\\`") return text.slice(1);
+                return text;
+            });
+        } else if (ctx instanceof RhsStringContext) {
+            return ctx.Rhs_CHAR().map(t => {
+                const text = t.getText();
+                if (/^\\u[0-9a-fA-F]{4}$/.test(text))
+                    return String.fromCharCode(parseInt(text.slice(2), 16));
+                if (text === "\\r") return "\r";
+                if (text === "\\n") return "\n";
+                if (text === "\\t") return "\t";
+                if (text === "\\0") return "\0";
+                if (text === "\\\\") return "\\";
+                if (/^\\/.test(text)) return text.slice(1);
+                return text;
+            });
+        } else return [];
+    }
+    visitLhsRawString = (ctx: LhsRawStringContext) =>
+        this.collectChars(ctx).join('');
+    visitLhsString = (ctx: LhsStringContext) =>
+        this.collectChars(ctx).join('');
+    visitRhsRawString = (ctx: RhsRawStringContext) =>
+        this.collectChars(ctx).join('');
+    visitRhsString = (ctx: RhsStringContext) =>
+        this.collectChars(ctx).join('');
+    visitNumber = (ctx: NumberContext) =>
+        ctx.getText();
 
     visitLhs = (ctx: LhsContext) =>
         ctx.pattern().map(e => this.visit(e)).join('|');
 
     visitPattern = (ctx: PatternContext) => {
         let match = "";
-        if (ctx._pre) match += `(?<=`;
-        if (ctx._start) match += `(?<!${this.getAnyLetter()})`;
-        if (ctx._pre) match += `${this.visit(ctx._pre)})`;
+        if (ctx._behind.length > 0)
+            match += `(?<=${ ctx._behind.map(e => this.visit(e)).join('') })`;
         match += this.visit(ctx._inner!);
-        if (ctx._post) match += `(?=${this.visit(ctx._post)}`;
-        if (ctx._end) match += `(?!${this.getAnyLetter()})`;
-        if (ctx._post) match += `)`;
+        if (ctx._ahead.length > 0)
+            match += `(?=${ ctx._ahead.map(e => this.visit(e)).join('') })`;
         return match;
+    }
+    visitLookaround = (ctx: LookaroundContext) => {
+        if (ctx.SLASH()) {
+            if (this.templates.has("letters"))
+                return this.negateExpr(this.templates.get("letters")!);
+            else return "\\P{L}";
+        } else return this.visit(ctx.expr()!)!;
     }
 
     visitTerms = (ctx: TermsContext) =>
@@ -103,43 +167,62 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
             else
                 return `(?:${this.negateExpr(c._l!)}|${this.negateExpr(c._r!)})` ;
         }
-        throw new Error(`Negating ${c.getText()} is unsupported.`);
+        return this.error(c, `Negating ${c.getText()} is unsupported.`);
     }
     negateTerm = (c: TermContext): string => {
         if (c instanceof GroupContext)
             return `(?:${this.negateExpr(c.expr())})`;
         if (c instanceof NotContext)
             return this.visit(c.term())!;
+        if (c instanceof DifferenceContext) {
+            const charset = this.collectCharsetTerm(c);
+            if (charset)
+                return `[^${this.buildSet(charset)}]`;
+            else
+                return this.error(c, `Cannot resolve difference of non-charset terms.`);
+        }
         if (c instanceof OrGroupContext)
-            return `[^${this.buildSet(this.collectCharsetTerm(c)!)}]`;
+            return `[^${this.buildSet(this.collectCharsetTerm(c)!)}]` ;
         if (c instanceof SubstitutionContext) {
             const template = this.getTemplate(c);
-            return this.negateExpr(template);
+            if (template) return this.negateExpr(template);
+            else return "";
         }
+        if (c instanceof AnchorContext)
+            return this.negateExpr(this.blockExpr.at(-1)!);
         if (c instanceof AnyLetterContext) {
             if (this.templates.has("letters")) {
                 const letters = this.templates.get("letters")!;
                 return this.negateExpr(letters);
             } else return "\\P{L}";
         }
-        if (c instanceof LhsStringContext)
+        if (c instanceof LhsCharsContext)
             return [...this.visit(c)!].map(ch => `[^${ch}]`).join('');
-        throw new Error(`Negating ${c.getText()} is unsupported.`);
+        return this.error(c, `Negating ${c.getText()} is unsupported.`);
     };
     visitNot = (ctx: NotContext) =>
         this.negateTerm(ctx.term());
 
     visitQuantification = (ctx: QuantificationContext) => {
-        let op = {
-            [SkryptParser.QUESTION]: '?',
-            [SkryptParser.PLUS]: '+',
-            [SkryptParser.ASTERISK]: '*'
-        }[ctx._q?.type ?? -1] ?? '';
-        if (ctx.term() instanceof QuantificationContext)
-            return this.visit(ctx.term()) + op;
-        else
-            return `(?:${this.visit(ctx.term())})${op}`;
+        const term = this.visit(ctx.term())!;
+        const quantifier = this.visit(ctx.quantifier())!;
+        return (ctx.term() instanceof QuantificationContext || ctx.term() instanceof GroupContext)
+            ? term + quantifier
+            : `(?:${term})${quantifier}` ;
     }
+    visitQuantSimple = (ctx: QuantSimpleContext) =>
+        ctx.getText();
+    visitQuantNtoM = (ctx: QuantNtoMContext) => {
+        const from = this.visit(ctx._from_!)!;
+        const to = this.visit(ctx._to!)!;
+        if (parseInt(from, 10) > parseInt(to, 10))
+            return this.error(ctx, "Numbers out of order in quantifier range.");
+        return `{${from},${to}}`;
+    }
+    visitQuantNOrMore = (ctx: QuantNOrMoreContext) =>
+        `{${this.visit(ctx.number())},}` ;
+    visitQuantExactlyN = (ctx: QuantExactlyNContext) =>
+        `{${this.visit(ctx.number())}}` ;
 
     collectCharsetExpr = (ctx: ExprContext): Set<string> | null => {
         if (ctx instanceof TermsContext && ctx.term().length === 1)
@@ -154,12 +237,23 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     collectCharsetTerm = (ctx: TermContext): Set<string> | null => {
         if (ctx instanceof GroupContext)
             return this.collectCharsetExpr(ctx.expr());
+        if (ctx instanceof DifferenceContext) {
+            const left = this.collectCharsetTerm(ctx._l!);
+            const right = this.collectCharsetTerm(ctx._r!);
+            if (left && right) return left.difference(right);
+        }
         if (ctx instanceof OrGroupContext)
             return new Set(this.collectChars(ctx.lhs_chars()));
-        if (ctx instanceof LhsStringContext && ctx.lhs_chars().Lhs_CHAR().length === 1)
-            return new Set([this.visit(ctx)!]);
-        if (ctx instanceof SubstitutionContext)
-            return this.collectCharsetExpr(this.getTemplate(ctx));
+        if (ctx instanceof LhsCharsContext) {
+            const set = this.collectChars(ctx.lhs_chars());
+            if (set.length === 1) return new Set(set);
+        }
+        if (ctx instanceof SubstitutionContext) {
+            const template = this.getTemplate(ctx);
+            if (template) return this.collectCharsetExpr(template);
+        }
+        if (ctx instanceof AnchorContext)
+            return this.collectCharsetExpr(this.blockExpr.at(-1)!);
         return null;
     }
     buildSet = (set: Set<string>) =>
@@ -168,13 +262,25 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     visitOrGroup = (ctx: OrGroupContext) =>
         `[${this.buildSet(this.collectCharsetTerm(ctx)!)}]` ;
 
-    getTemplate = (ctx: SubstitutionContext): ExprContext => {
+    visitDifference = (ctx: DifferenceContext) => {
+        const charset = this.collectCharsetTerm(ctx);
+        if (charset)
+            return `[${this.buildSet(charset)}]`;
+        else
+            return this.error(ctx, `Cannot resolve difference of non-charset terms.`);
+    }
+
+    getTemplate = (ctx: SubstitutionContext): ExprContext | undefined => {
         const name = this.visit(ctx.lhs_chars())!;
         if (this.templates.has(name)) return this.templates.get(name)!;
-        else throw new Error(`Template ${name} is not defined.`);
+        this.error(ctx, `Template ${name} is not defined.`);
+        return undefined;
     }
-    visitSubstitution = (ctx: SubstitutionContext) =>
-        this.visit(this.getTemplate(ctx))!;
+    visitSubstitution = (ctx: SubstitutionContext) => {
+        const template = this.getTemplate(ctx);
+        if (template) return this.visit(template)!;
+        else return "";
+    }
 
     getAnyLetter = () =>
         this.templates.has("letters")
@@ -183,12 +289,33 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     visitAnyLetter = (ctx: AnyLetterContext) =>
         this.getAnyLetter();
 
-    visitLhsString = (ctx: LhsStringContext) =>
+    visitAnchor = (ctx: AnchorContext) => {
+        if (this.blockExpr.length > 0)
+            return this.visit(this.blockExpr.at(-1)!)!;
+        else throw new Error(`Illegal use of anchor outside block.`);
+    }
+
+    visitLhsChars = (ctx: LhsCharsContext) =>
         this.visit(ctx.lhs_chars())!;
 
     visitNothing = (ctx: NothingContext) =>
         "";
 
-    visitRhsString = (ctx: RhsStringContext) =>
+    visitRhsChars = (ctx: RhsCharsContext) =>
         this.visit(ctx.rhs_chars())!;
+
+    visitWhenGroup = (ctx: WhenGroupContext) =>
+        `(${this.visit(ctx.when())})`;
+
+    visitWhenNot = (ctx: WhenNotContext) =>
+        `!${this.visit(ctx.when())}`;
+
+    visitWhenAnd = (ctx: WhenAndContext) =>
+        `${this.visit(ctx._l!)} && ${this.visit(ctx._r!)}`
+
+    visitWhenOr = (ctx: WhenOrContext) =>
+        `${this.visit(ctx._l!)} || ${this.visit(ctx._r!)}`
+
+    visitWhenChars = (ctx: WhenCharsContext) =>
+        this.visit(ctx.lhs_chars())!;
 }

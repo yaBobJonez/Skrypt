@@ -13,39 +13,46 @@
 // limitations under the License.
 
 import FileVisitor from "./FileVisitor.js";
-// @ts-ignore
-import templatetxt from "./template.txt?raw"
+import {type FunctionDef, Stage} from "./Structures.ts";
 
 export default class CodeGenerator {
-    private readonly template: string;
-
-    constructor() {
-        this.template = templatetxt;
+    render(visitor: FileVisitor) {
+        let result = `import {collectMatches, buildString} from "./Skrypt.js"\n`;
+        for (const func of visitor.functions) {
+            if (func.isEmpty()) continue;
+            result += `\nexport function ${func.name}(text${this.options(func)}) {\n`;
+            result += `\tlet rules, slots;\n`;
+            for (const stage of func.stages) {
+                if (stage.isEmpty()) continue;
+                if (stage.rules.length === 1) {
+                    const r = stage.rules[0];
+                    if (r.when !== true)
+                        result += `\tif (${r.when})\n\t`;
+                    result += `\ttext = text.replace(${r.match}, "${JSON.stringify(r.replace).slice(1, -1)}");\n`;
+                    continue;
+                }
+                result += `\trules = ${this.rules(stage)};\n`;
+                result += `\trules = rules.filter(r => r.when);\n`;
+                result += `\tslots = collectMatches(text, rules);\n`;
+                result += `\ttext = buildString(text, slots);\n`;
+            }
+            result += `\treturn text;\n`;
+            result += `}\n`;
+        }
+        return result;
     }
 
-    render(function_name: string, visitor: FileVisitor) {
-        let text = this.template;
-        text = text.replace("{{function}}", function_name);
-        text = text.replace("{{options}}", this.options(visitor));
-        text = text.replace("{{rules}}", this.rules(visitor));
-        return text;
+    options(func: FunctionDef) {
+        return Array.from(func.options)
+            .map(([name, value]) => `, ${name} = ${value}`)
+            .join('');
     }
-
-    options(visitor: FileVisitor) {
-        return Array.from(visitor.options)
-            .map(([name, value]) => `${name} = ${value}`)
-            .join(", ");
-    }
-    rules(visitor: FileVisitor) {
-        const il = ' '.repeat(8);
-        const is = ' '.repeat(4);
-
+    rules(stage: Stage) {
         let res = "[\n";
-        res += visitor.rules
-            .map(r => `${il}{"match": ${r.match}, "replace": "${r.replace.replaceAll('"', '\\"')}", "when": ${r.when}}`)
+        res += stage.rules
+            .map(r => `\t\t{"match": ${r.match}, "replace": "${JSON.stringify(r.replace).slice(1, -1)}", "when": ${r.when}}`)
             .join(',\n');
-        res += `\n${is}]`;
-
+        res += `\n\t]`;
         return res;
     }
 }

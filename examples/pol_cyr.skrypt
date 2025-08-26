@@ -52,20 +52,11 @@ o	→	о
 ó	→	у
 p	→	п
 q	→	к
-[<kpth>]rzcz,
-[<kpth>]rzci[<aąeęioóuy>],
-[<kpth>]rzc[i]	→	щ	? useShcha
-[<kpth>]rzć	→	щь	? useShcha
 [<kpth>]rz	→	ш
 rz			→	ж
 r	→	р
-szcz,
-szci[<aąeęioóuy>],
-szc[i]	→	щ	? useShcha
-szć	→	щь	? useShcha
 sz, si[<aąeęioóuy>], s[i]	→	ш
 s	→	с
-ść	→	щь	? useShcha
 ś	→	шь
 t	→	т
 u	→	у
@@ -76,3 +67,6 @@ y	→	ы
 zi[<aąeęioóuy>], z[i], ż	→	ж
 z	→	з
 ź	→	жь
+
+! stage
+ш(ь)?ч	→	щ	? useShcha

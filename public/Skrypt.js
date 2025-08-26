@@ -36,11 +36,8 @@ export function collectMatches(input, rules) {
                 rotateFallbacks(oldMatch, current);
                 continue;
             }
-            if (typeof slots[start] === "object") {
-                const oldMatch = slots[start];
-                if (oldMatch.end - oldMatch.start >= match[0].length)
-                    continue;
-            }
+            if (typeof slots[start] === "object")
+                continue;
             slots[start] = current;
             for (let i = start + 1; i < end; i++) {
                 if (typeof slots[i] === "object") {

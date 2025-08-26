@@ -78,7 +78,9 @@ document.getElementById("parseBtn").onclick = () => {
 
     document.getElementById("outputText").value = "";
     const tree = parser.file();
-    const visitor = new FileVisitor();
+    const visitor = new FileVisitor((line, column, msg) => {
+        document.getElementById("outputText").value += `Syntax error at ${line}:${column}: ${msg}\n`;
+    });
     visitor.visit(tree);
     fileVisitor = visitor;
 
@@ -87,25 +89,31 @@ document.getElementById("parseBtn").onclick = () => {
 
 document.getElementById("transformBtn").onclick = () => {
     if (!fileVisitor) return;
-    let input = document.getElementById("inputText").value;
+    let text = document.getElementById("inputText").value;
 
-    const rules = fileVisitor.rules.filter(r => {
-        if (typeof r.when === "boolean") return r.when;
-        else return fileVisitor.options.get(r.when) !== "false";
-    });
+    if (fileVisitor.functions.length !== 1) {
+        Metro.notify.create("Multiple functions defined, cannot transform.", "Error");
+        return;
+    }
 
     const startTime = performance.now();
-    const slots = collectMatches(input, rules);
-    const output = buildString(input, slots);
+    for (const stage of fileVisitor.functions[0].stages) {
+        if (stage.isEmpty()) continue;
+        const rules = stage.rules.filter(r => {
+            if (typeof r.when === "boolean") return r.when;
+            else return fileVisitor.functions[0].options.get(r.when) !== "false";
+        });
+        const slots = collectMatches(text, rules);
+        text = buildString(text, slots);
+    }
     const endTime = performance.now();
 
-    document.getElementById("outputText").value = output;
+    document.getElementById("outputText").value = text;
     Metro.notify.create(`Operation took ${endTime - startTime} ms.`, "Transformed");
 }
 
 document.getElementById("generateJSBtn").onclick = () => {
     if (!fileVisitor) return;
-    document.getElementById("outputText").value = codeGenerator
-        .render("transform", fileVisitor);
+    document.getElementById("outputText").value = codeGenerator.render(fileVisitor);
     Metro.notify.create("Function was composed in Output field.", "Generated");
 }
