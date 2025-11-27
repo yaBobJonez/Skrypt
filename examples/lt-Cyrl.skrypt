@@ -1,0 +1,51 @@
+# Cyrillic Lithuanian
+# ===================
+
+@ ukrainianG = false
+
+ia[u]	→	я
+ia	→	э
+au/	→	оу
+[j]<aą>, ią	→	э́
+a[i(p?)]/	→	э
+a	→	а
+ą	→	а́
+b	→	б
+ch	→	х
+c	→	ц
+č	→	ч
+d	→	д
+[i]e	→	е
+e	→	э
+ę	→	э́
+ė	→	е
+f	→	ф
+g	→	ґ	? ukrainianG
+g	→	г
+h	→	г	? ukrainianG
+h	→	ѓ
+[<aeiou>]i	→	й
+i[o]	→	ь
+iu	→	ю
+i<ųū>	→	ю́
+i	→	и
+į, y	→	і
+j	→	й
+k	→	к
+l	→	л
+m	→	м
+n	→	н
+[iu]o	→	а
+o	→	о
+p	→	п
+q(u)?	→	ку
+r	→	р
+s	→	с
+š	→	ш
+t	→	т
+u	→	у
+ų, ū	→	у́
+v, w	→	в
+x	→	кс
+z	→	з
+ž	→	ж

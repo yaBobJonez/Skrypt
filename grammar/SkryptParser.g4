@@ -35,7 +35,7 @@ term        : LPAREN expr RPAREN                    # Group
             | l=term HYPHEN r=term                  # Difference
             | TILDE term                            # Not
             | term quantifier                       # Quantification
-            | LT lhs_chars GT                       # OrGroup
+            | LT charset+ GT                        # OrGroup
             | LBRACE lhs_chars RBRACE               # Substitution
             | UNDERSCORE                            # AnyLetter
             | CARET                                 # Anchor
@@ -46,6 +46,8 @@ quantifier  : (QUESTION | PLUS | ASTERISK)          # QuantSimple
             | MULT number PLUS                      # QuantNOrMore
             | MULT number                           # QuantExactlyN
             ;
+charset     : l=(Lhs_CHAR | DIGIT) HYPHEN r=(Lhs_CHAR | DIGIT)
+            | chars+=(Lhs_CHAR | DIGIT)+ ;
 
 rhs         : VOID      # Nothing
             | rhs_chars # RhsChars
@@ -53,6 +55,8 @@ rhs         : VOID      # Nothing
 
 when        : LPAREN when RPAREN        # WhenGroup
             | TILDE when                # WhenNot
+            | l=when (LT|GT) EQ? r=when # WhenComparison
+            | l=when TILDE? EQ r=when   # WhenEquality
             | l=when AMPERSAND r=when   # WhenAnd
             | l=when BAR r=when         # WhenOr
             | lhs_chars                 # WhenChars

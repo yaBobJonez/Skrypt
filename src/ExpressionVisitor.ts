@@ -47,11 +47,13 @@ import {
     TermsContext,
     WhenGroupContext,
     WhenNotContext,
+    WhenComparisonContext,
+    WhenEqualityContext,
     WhenAndContext,
     WhenOrContext,
     WhenCharsContext
 } from "../lib/SkryptParser.js";
-import {ParserRuleContext} from "antlr4ng";
+import {ParserRuleContext, Token} from "antlr4ng";
 
 export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     templates = new Map<string, ExprContext>();
@@ -68,6 +70,24 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
         return "!PARSE ERROR!";
     }
 
+    collectLhsString = (tokens: Token[]) =>
+        tokens.map(t => {
+            const text = t.text!;
+            if (/^\\u[0-9a-fA-F]{4}$/.test(text)) return text;
+            if (/^\\[^rntvdDsS0^$.(){}[\]|/?+*\\]$/.test(text)) return text.slice(1);
+            return text;
+        });
+    renderChar = (text: string) => {
+        if (/^\\u[0-9a-fA-F]{4}$/.test(text))
+            return String.fromCharCode(parseInt(text.slice(2), 16));
+        if (text === "\\r") return "\r";
+        if (text === "\\n") return "\n";
+        if (text === "\\t") return "\t";
+        if (text === "\\0") return "\0";
+        if (text === "\\\\") return "\\";
+        if (/^\\/.test(text)) return text.slice(1);
+        return text;
+    }
     collectChars = (ctx: Lhs_charsContext | Rhs_charsContext) => {
         if (ctx instanceof LhsRawStringContext) {
             return ctx.String_CHAR().map(t => {
@@ -78,12 +98,7 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
                 return text;
             });
         } else if (ctx instanceof LhsStringContext) {
-            return ctx._chars.map(t => {
-                const text = t.text!;
-                if (/^\\u[0-9a-fA-F]{4}$/.test(text)) return text;
-                if (/^\\[^rntvdDsS0^$.(){}[\]|/?+*\\]$/.test(text)) return text.slice(1);
-                return text;
-            });
+            return this.collectLhsString(ctx._chars);
         } else if (ctx instanceof RhsRawStringContext) {
             return ctx.String_CHAR().map(t => {
                 const text = t.getText();
@@ -94,18 +109,7 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
                 return text;
             });
         } else if (ctx instanceof RhsStringContext) {
-            return ctx.Rhs_CHAR().map(t => {
-                const text = t.getText();
-                if (/^\\u[0-9a-fA-F]{4}$/.test(text))
-                    return String.fromCharCode(parseInt(text.slice(2), 16));
-                if (text === "\\r") return "\r";
-                if (text === "\\n") return "\n";
-                if (text === "\\t") return "\t";
-                if (text === "\\0") return "\0";
-                if (text === "\\\\") return "\\";
-                if (/^\\/.test(text)) return text.slice(1);
-                return text;
-            });
+            return ctx.Rhs_CHAR().map(t => this.renderChar(t.getText()));
         } else return [];
     }
     visitLhsRawString = (ctx: LhsRawStringContext) =>
@@ -224,6 +228,18 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
     visitQuantExactlyN = (ctx: QuantExactlyNContext) =>
         `{${this.visit(ctx.number())}}` ;
 
+    collectRange = (ctx: ParserRuleContext, l: Token, r: Token): Set<string> | null => {
+        const left = this.renderChar(l.text!).charCodeAt(0);
+        const right = this.renderChar(r.text!).charCodeAt(0);
+        if (left > right) {
+            this.error(ctx, `Range characters ${l.text} and ${r.text} are not in order.`);
+            return null;
+        }
+        const set = new Set<string>();
+        for (let code = left; code <= right; code++)
+            set.add(String.fromCharCode(code));
+        return set;
+    }
     collectCharsetExpr = (ctx: ExprContext): Set<string> | null => {
         if (ctx instanceof TermsContext && ctx.term().length === 1)
             return this.collectCharsetTerm(ctx.term()[0]);
@@ -242,8 +258,19 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
             const right = this.collectCharsetTerm(ctx._r!);
             if (left && right) return left.difference(right);
         }
-        if (ctx instanceof OrGroupContext)
-            return new Set(this.collectChars(ctx.lhs_chars()));
+        if (ctx instanceof OrGroupContext) {
+            let set = new Set<string>();
+            ctx.charset().forEach(charset => {
+                if (charset.HYPHEN()) {
+                    const range = this.collectRange(ctx, charset._l!, charset._r!);
+                    if (range) set = set.union(range);
+                } else {
+                    const chars = new Set(this.collectLhsString(charset._chars));
+                    set = set.union(chars);
+                }
+            });
+            return set;
+        }
         if (ctx instanceof LhsCharsContext) {
             const set = this.collectChars(ctx.lhs_chars());
             if (set.length === 1) return new Set(set);
@@ -309,6 +336,17 @@ export default class ExpressionVisitor extends SkryptParserVisitor<string> {
 
     visitWhenNot = (ctx: WhenNotContext) =>
         `!${this.visit(ctx.when())}`;
+
+    visitWhenComparison = (ctx: WhenComparisonContext) => {
+        const op = ctx.LT()? '<' : '>';
+        const strict = ctx.EQ()? '=' : '';
+        return `${this.visit(ctx._l!)} ${op}${strict} ${this.visit(ctx._r!)}` ;
+    }
+
+    visitWhenEquality = (ctx: WhenEqualityContext) => {
+        const op = ctx.TILDE()? "!=": "==";
+        return `${this.visit(ctx._l!)} ${op} ${this.visit(ctx._r!)}` ;
+    }
 
     visitWhenAnd = (ctx: WhenAndContext) =>
         `${this.visit(ctx._l!)} && ${this.visit(ctx._r!)}`

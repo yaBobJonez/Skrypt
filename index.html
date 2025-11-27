@@ -49,7 +49,7 @@
 
             <div id="tabAbout" class="p-6">
                 <h1 class="text-center">Skrypt</h1>
-                <p class="text-center text-bold my-2">Rev 2.0</p>
+                <p class="text-center text-bold my-2">Rev 2.1</p>
                 <hr />
                 <p class="indent text-just">
                     Skrypt is a simple yet powerful declarative text transformation language, designed to easily
@@ -144,10 +144,9 @@
                                 <li><code>\n</code>: newline</li>
                                 <li><code>\t</code>: tab</li>
                                 <li><code>\v</code>: vertical whitespace</li>
-                                <li><code>\d</code>: any digit (Arabic numeral); equivalent to <code>&lt;0123456789&gt;
-                                    </code></li>
+                                <li><code>\d</code>: any digit (Arabic numeral); equivalent to <code>&lt;0-9&gt;</code></li>
                                 <li><code>\D</code>: any non-digit </li>
-                                <li><code>\s</code>: any whitespace character</li>
+                                <li><code>\s</code>: any whitespace character; equivalent to <code>&lt;\r\n\t\f\v &gt;</code></li>
                                 <li><code>\S</code>: any non-whitespace character</li>
                                 <li><code>\0</code>: null character</li>
                             </ul>
@@ -238,16 +237,22 @@
                                 <em>Options</em> let you control whether certain rules are applied by making them
                                 conditional. They are also made available as <em>parameters</em> when Skrypt generates
                                 JavaScript functions. Use <code>@ name = value</code> to define an option, for example:
-                                <code>@ soft = true</code>.
+                                <code>@ soft = true</code>. Possible values are currently backend-specific, and commonly
+                                include <code>true</code> (yes) and <code>false</code> (no) or integer numbers; other
+                                arbitrary strings must be enclosed in double quotes, e.g. <code>`"disable"`</code>.
                             </p>
                             <p class="px-4">
                                 Marking a rule as dependent on the values of some options is done by appending a
                                 so-called <em>When clause</em> to it. <span class="badge soft-emerald">New in 2.0</span>
-                                There are three operators related to options: <code>~</code> not, <code>&</code> and,
-                                <code>|</code> or. Such a clause starts with a question mark and contains an expression
-                                with options. For instance, <code>? ~silentH & nasal</code> at the end of a rule would
-                                mean it should be active only when the option "silentH" is Not enabled (equals false)
-                                And "nasal" is enabled (equals true).
+                                There are three logical operators related to options: <code>~</code> not, <code>&</code>
+                                and, <code>|</code> or. <span class="badge soft-amber">New in 2.1</span> Additionally,
+                                for non-boolean options (with values other than true/false) you can use <code>=</code>
+                                and <code>~=</code> to test for equality (e.g. <code>devoicing = `"allowed"`</code>);
+                                and for numeric options specifically, also <code>&lt;</code>, <code>&lt;=</code>,
+                                <code>&gt;</code>, <code>&gt;=</code>. Such a When clause starts with a question mark
+                                and contains an expression with options. For instance, <code>? ~silentH & nasal</code>
+                                at the end of a rule would mean it should be active only when the option "silentH" is
+                                Not enabled (equals false) And "nasal" is enabled (equals true).
                             </p>
                             <p class="px-4 pb-4">
                                 In Skrypt, statements (directives, options, templates, rules) are separated by newlines.
@@ -370,7 +375,7 @@
                                 <tr>
                                     <td>(A)</td>
                                     <td>Group</td>
-                                    <td>Overrides precedence, e.g. <code>a(b|c)</code></td>
+                                    <td>Overrides precedence (the order of operations), e.g. <code>a(b|c)</code></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -393,8 +398,16 @@
                                 <li>Or (<code>|</code>)</li>
                             </ol>
                             <p class="px-4">
-                                Use grouping <code>()</code> if you need to change the order of operations, like in
-                                math. <em>Quantifiers</em> denote repetition of terms:
+                                <span class="badge soft-amber">New in 2.1</span> Even though it is not considered an
+                                operator on its own in this context, <code>-</code> can also be used inside charsets to
+                                provide <em>ranges</em> that let you easily match any of the characters from the
+                                specified sequences, defined by their
+                                <a href="https://en.wikipedia.org/wiki/List_of_Unicode_characters">Unicode code points</a>.
+                                For instance, <code>&lt;a-z0-9é&gt;</code> is a charset that would match any (lowercase)
+                                basic Latin letter (abcdefghijklmnopqrstuvwxyz), a digit, or the character é (e acute).
+                            </p>
+                            <p class="px-4">
+                                <em>Quantifiers</em> denote repetition of terms:
                             </p>
                             <ul>
                                 <li><code>X?</code>: zero or one X (optional X)</li>

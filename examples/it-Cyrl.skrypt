@@ -1,0 +1,76 @@
+# Cyrillic Italian
+# ================
+
+@ tryToGuessY = false
+@ monographizeDzh = 2
+
+% letters	= <aàbcdeèéfghiìíîjklmnoòópqrstuùúvwxyz>
+% hv		= <aàoòóuùú>
+% sv		= <eèéiìíîy>
+% vl		= {hv}|<eèé>
+% vy		= {hv}|{sv}
+% v			= {vy}-y
+
+à, a	→	а
+b	→	б
+cci[{hv}],
+cc[{sv}]	→	тч
+ci[{hv}],
+c[{sv}],
+c[<\'’ʼ>{sv}]	→	ч
+c	→	к
+d	→	д
+è	→	ѐ
+é	→	е̂
+e	→	е
+f	→	ф
+ggi[{hv}],
+gg[{sv}]	→	ддж	? monographizeDzh = 0
+ggi[{hv}],
+gg[{sv}]	→	дӡ	? monographizeDzh = 1
+ggi[{hv}],
+gg[{sv}]	→	дҗ	? monographizeDzh = 2
+gi[{hv}]	→	дж	? monographizeDzh = 0
+gi[{hv}]	→	ӡ	? monographizeDzh = 1
+gi[{hv}]	→	җ	? monographizeDzh = 2
+[{vl}]gli[{vl}],
+[{vl}]gl[i]		→	лљ
+gli[{vl}],
+gl[i]		→	љ
+[{vl}]gn	→	нњ
+gn			→	њ
+g[{sv}]		→	дж	? monographizeDzh = 0
+g[{sv}]		→	ӡ	? monographizeDzh = 1
+g[{sv}]		→	җ	? monographizeDzh = 2
+g	→	г
+h	→	{}
+ì		→	ѝ
+î, í	→	и
+[{v}]i[{v}],
+i[{v}_]		→	й	? tryToGuessY
+i			→	и
+j	→	ж
+k	→	к
+l	→	л
+m	→	м
+n	→	н
+ò	→	о̀
+ó	→	о̂
+o	→	о
+p	→	п
+q	→	к
+r	→	р
+sci[{hv}],
+sc[{sv}]	→	ш
+ss	→	сс
+s[<bdgjlmnrvwz>],
+[{vy}]s[{vy}]	→	з
+s	→	с
+t	→	т
+u	→	у
+ù	→	у̀
+w, v	→	в
+[e]x[{vy}]	→	гз
+x			→	кс
+y	→	й
+z	→	ц

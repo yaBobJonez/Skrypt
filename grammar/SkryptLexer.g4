@@ -86,6 +86,9 @@ When_RPAREN     : RPAREN    -> type(RPAREN) ;
 
 When_TILDE      : TILDE     -> type(TILDE) ;
 When_BAR        : BAR       -> type(BAR) ;
+When_LT         : LT        -> type(LT) ;
+When_GT         : GT        -> type(GT) ;
+When_EQ         : EQ        -> type(EQ) ;
 AMPERSAND       : '&' ;
 
 When_LF         : LF        -> type(LF), mode(DEFAULT_MODE) ;

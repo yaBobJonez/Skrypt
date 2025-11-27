@@ -2,7 +2,7 @@ import {basicSetup, EditorView} from "codemirror"
 import {keymap} from "@codemirror/view"
 import {insertTab} from "@codemirror/commands";
 import {skrypt} from "codemirror-lang-skrypt"
-import defaultText from "../examples/pol_cyr.skrypt?raw"
+import defaultText from "../examples/pl-Cyrl.skrypt?raw"
 import {CharStream, CommonTokenStream, BaseErrorListener} from "antlr4ng";
 import {SkryptLexer} from "../lib/SkryptLexer.js";
 import {SkryptParser} from "../lib/SkryptParser.js";
@@ -99,9 +99,14 @@ document.getElementById("transformBtn").onclick = () => {
     const startTime = performance.now();
     for (const stage of fileVisitor.functions[0].stages) {
         if (stage.isEmpty()) continue;
+        const options = fileVisitor.functions[0].options;
         const rules = stage.rules.filter(r => {
-            if (typeof r.when === "boolean") return r.when;
-            else return fileVisitor.functions[0].options.get(r.when) !== "false";
+            if (typeof r.when === "boolean")
+                return r.when;
+            const evaluator = new Function(...options.keys(), "return " + r.when);
+            const result = evaluator(...options.values());
+            if (result === "false") return false;
+            return Boolean(result);
         });
         const slots = collectMatches(text, rules);
         text = buildString(text, slots);

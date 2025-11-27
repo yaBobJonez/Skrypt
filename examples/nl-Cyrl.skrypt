@@ -1,0 +1,80 @@
+# Cyrillic Dutch
+# ==============
+
+@ omitSilentFinalN = true
+@ useNeutralI = false
+@ distrinctH = true
+
+% letters	= <abcdefghijklmnopqrstuvwxĳyz>
+% e			= <éèêe>
+
+ij	→	ĳ
+! stage
+
+a<ae><iĳy>,
+a<ĳy>		→	а̄й
+aux		→	о̄
+au(w)?	→	оў
+a<ae>	→	а̄
+ai		→	ай
+a	→	а
+[_]b/	→	п
+b		→	б
+ch	→	х
+c[<eiy>]	→	с
+c(k)?	→	к
+ç	→	с
+[_]d/	→	т
+d		→	д
+{e}euw	→	е̄ў
+{e}au(x)?	→	о̄
+{e}e	→	е̄
+{e}<iĳy>	→	ей
+{e}u	→	ё
+[_]{e}n/	→	е	? omitSilentFinalN
+{e}			→	е
+f	→	ф
+gch		→	х
+[_]g(h)?/	→	х
+g(h)?		→	г
+h	→	г̑	? distrinctH
+h	→	г
+ieuw	→	і̄ў
+ie		→	і
+i	→	и	? useNeutralI
+i	→	і
+j	→	й
+k	→	к
+l	→	л
+m	→	м
+ng/, n	→	н
+oe<iĳy>		→	уй
+oo<iĳy>,
+o<ĳy>	→	о̄й
+ou(w)?	→	оў
+oe	→	у
+oi	→	ой
+oo	→	о̄
+o	→	о
+ô	→	о̄
+ph	→	ф
+p	→	п
+qu	→	кв
+q	→	к
+r	→	р
+s<jh>	→	ш
+s(z)?	→	с
+tsj,
+[~h]tj	→	ч
+t(h)?	→	т
+u<iĳy>	→	ёю
+uw		→	юў
+u(u)?	→	ю
+v	→	в
+w	→	ў
+x	→	кс
+ĳ	→	ай
+[<aeiouĳ>]y[<aeiouĳ>]	→	й
+y						→	и	? useNeutralI
+y						→	і
+z	→	з

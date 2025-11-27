@@ -1,0 +1,62 @@
+# Cyrillic Spanish
+# ================
+
+@ markH = true
+
+% letters	= <aábcdeéfghiíjklmnñoópqrstuúvwxyz>
+% v			= <aáeéoóuú>
+% vi		= {v}|<ií>
+
+á	→	а̀
+a	→	а
+/<bv>,
+[<mn>]<bv>	→	б
+<bv>		→	в
+ch	→	ч
+c[<ei>]		→	ҫ
+c[<bdgv>]	→	г
+c			→	к
+/d,
+[<ln>]d		→	д
+d			→	д̆
+é	→	ѐ
+e	→	е
+f	→	ф
+gu[<ei>]	→	г
+g[<ei>]		→	х
+g			→	г
+hi{v}	→	й
+hu[{v}]	→	у
+h	→	ҳ	? markH
+h	→	{}
+í	→	ѝ
+i[{v}]	→	й
+i		→	и
+jh	→	дж
+j	→	х
+k	→	к
+ll	→	љ
+l	→	л
+m/	→	н
+m	→	м
+n	→	н
+ñ	→	њ
+ó	→	о̀
+o	→	о
+p[t]	→	в
+p		→	п
+q(u)?	→	к
+r	→	р
+s[<lmbdgv>|hu{v}]	→	з
+s					→	с
+tz	→	ц
+t	→	т
+ú	→	у̀
+ü, u	→	у
+w	→	в
+/x		→	с
+x(s)?	→	кс
+y[{vi}]		→	й
+y			→	и
+z[{vi}], z/		→	ҫ
+z				→	ҙ
