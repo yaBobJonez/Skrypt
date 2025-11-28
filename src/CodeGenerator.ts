@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import FileVisitor from "./FileVisitor.js";
 import {type FunctionDef, Stage} from "./Structures.ts";
 
 export default class CodeGenerator {
-    render(visitor: FileVisitor) {
+    render(functions: FunctionDef[]) {
         let result = `import {collectMatches, buildString} from "./Skrypt.js"\n`;
-        for (const func of visitor.functions) {
+        for (const func of functions) {
             if (func.isEmpty()) continue;
             result += `\nexport function ${func.name}(text${this.options(func)}) {\n`;
             result += `\tlet rules, slots;\n`;

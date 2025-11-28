@@ -2,4 +2,6 @@
 *.tokens
 *.interp
 /lib
+/tests/inputs
+/tests/outputs
 node_modules
