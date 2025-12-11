@@ -52,11 +52,9 @@ import {
     WhenOrContext,
     WhenCharsContext
 } from "../../lib/SkryptParser.js";
-import {type ExprNode, Pattern, Rule} from "./Structure.ts";
+import {type ExprNode, FunctionDef, Pattern, Rule} from "./Structure.ts";
 import {
-    AndNode,
     CharsetNode,
-    ComparisonNode,
     GroupNode,
     NotNode,
     OrNode,
@@ -64,7 +62,14 @@ import {
     StringNode,
     TermsNode
 } from "./Expressions.ts";
-import {FunctionDef} from "../Structures.ts";
+import {
+    VariableNode,
+    WhenAndNode,
+    WhenComparisonNode,
+    WhenGroupNode,
+    WhenNotNode,
+    WhenOrNode
+} from "./WhenExpressions.ts";
 
 export class SemanticError extends Error {
     constructor(
@@ -91,10 +96,8 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         return null;
     }
     visitDirective = (ctx: DirectiveContext) => {
-        const name = (this.visit(ctx._name!) as StringNode).value;
-        const values = ctx._values
-            .map(v => this.visit(v) as StringNode)
-            .map(v => v.value);
+        const name = this.visit(ctx._name!)!.toRegex();
+        const values = ctx._values.map(v => this.visit(v)!.toRegex());
 
         if (/case[- ]?sensitive/.test(name))
             this.flags = "gu";
@@ -117,13 +120,13 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         return null;
     }
     visitOption = (ctx: OptionContext) => {
-        const key = (this.visit(ctx._name!) as StringNode).value;
-        const value = (this.visit(ctx._value!) as StringNode).value;
+        const key = this.visit(ctx._name!)!.toRegex();
+        const value = this.visit(ctx._value!)!.toRegex();
         this.currFunc().options.set(key, value);
         return null;
     }
     visitTemplate = (ctx: TemplateContext) => {
-        const key = (this.visit(ctx._name!) as StringNode).value;
+        const key = this.visit(ctx._name!)!.toRegex();
         const value = this.visit(ctx._value!)!;
         this.templates.set(key, value);
         return null;
@@ -135,7 +138,9 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         const when = ctx.when()
             ? this.visit(ctx.when()!)
             : null;
-        return new Rule(patterns, this.flags, replace.toString(), when);
+        const rule = new Rule(patterns, this.flags, replace.toRegex(), when);
+        this.currFunc().addRule(rule);
+        return null;
     }
     visitBlock = (ctx: BlockContext) => {
         if (ctx.when()) this.blockOptionStack.push(this.visit(ctx.when()!)!);
@@ -267,6 +272,9 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
             return new GroupNode(new NotNode(inner.inner));
         if (inner instanceof NotNode)
             return inner.inner;
+        if (inner instanceof QuantificationNode)
+            throw new SemanticError(ctx.start!.line, ctx.start!.column,
+                `Negating ${inner.toRegex()} is unsupported.`);
         return new NotNode(inner);
     }
     visitQuantification = (ctx: QuantificationContext) => {
@@ -313,7 +321,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         return new CharsetNode(...set);
     }
     visitSubstitution = (ctx: SubstitutionContext) => {
-        const name = (this.visit(ctx.lhs_chars()) as StringNode).value;
+        const name = this.visit(ctx.lhs_chars())!.toRegex();
         if (this.templates.has(name))
             return this.templates.get(name)!;
         throw new SemanticError(ctx.start!.line, ctx.start!.column,
@@ -340,29 +348,31 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         this.visit(ctx.rhs_chars())!;
 
 
-    visitWhenGroup = (ctx: WhenGroupContext) =>
-        this.visit(ctx.when())!;
-    visitWhenNot = (ctx: WhenNotContext) => new NotNode(
+    visitWhenGroup = (ctx: WhenGroupContext) => new WhenGroupNode(
         this.visit(ctx.when())!
     );
-    visitWhenComparison = (ctx: WhenComparisonContext) => new ComparisonNode(
+    visitWhenNot = (ctx: WhenNotContext) => new WhenNotNode(
+        this.visit(ctx.when())!
+    );
+    visitWhenComparison = (ctx: WhenComparisonContext) => new WhenComparisonNode(
         this.visit(ctx._l!)!,
         (ctx.LT()? '<' : '>') + (ctx.EQ()? '=' : ''),
         this.visit(ctx._r!)!
     );
-    visitWhenEquality = (ctx: WhenEqualityContext) => new ComparisonNode(
+    visitWhenEquality = (ctx: WhenEqualityContext) => new WhenComparisonNode(
         this.visit(ctx._l!)!,
         ctx.TILDE()? "!=": "==",
         this.visit(ctx._r!)!
     );
-    visitWhenAnd = (ctx: WhenAndContext) => new AndNode(
+    visitWhenAnd = (ctx: WhenAndContext) => new WhenAndNode(
         this.visit(ctx._l!)!,
         this.visit(ctx._r!)!
     );
-    visitWhenOr = (ctx: WhenOrContext) => new OrNode(
+    visitWhenOr = (ctx: WhenOrContext) => new WhenOrNode(
         this.visit(ctx._l!)!,
         this.visit(ctx._r!)!
     );
-    visitWhenChars = (ctx: WhenCharsContext) =>
-        this.visit(ctx.lhs_chars())!;
+    visitWhenChars = (ctx: WhenCharsContext) => new VariableNode(
+        this.visit(ctx.lhs_chars())!.toRegex()
+    );
 }

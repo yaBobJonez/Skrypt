@@ -15,10 +15,10 @@
 import {BaseErrorListener, CharStream, CommonTokenStream} from "antlr4ng";
 import {SkryptLexer} from "../lib/SkryptLexer.ts";
 import {SkryptParser} from "../lib/SkryptParser.ts";
-import FileVisitor from "./FileVisitor.ts";
-import type {FunctionDef} from "./Structures.ts";
 // @ts-ignore
 import {buildString, collectMatches} from "../public/Skrypt.js";
+import type {FunctionDef} from "./ast/Structure.ts";
+import ASTBuilder, {SemanticError} from "./ast/ASTBuilder.ts";
 
 export function parseRules(
     code: string,
@@ -38,9 +38,15 @@ export function parseRules(
     }
 
     const tree = parser.file();
-    const visitor = new FileVisitor(handler);
-    visitor.visit(tree);
-    return visitor.functions;
+    const visitor = new ASTBuilder();
+    try {
+        visitor.visit(tree);
+        return visitor.functions;
+    } catch (e: unknown) {
+        if (e instanceof SemanticError)
+            handler(e.line, e.column, e.message);
+        return [];
+    }
 }
 
 export function transformText(func: FunctionDef, text: string) {
@@ -48,10 +54,10 @@ export function transformText(func: FunctionDef, text: string) {
         if (stage.isEmpty()) continue;
         const options = func.options;
         const rules = stage.rules.filter(r => {
-            if (typeof r.when === "boolean")
-                return r.when;
-            const evaluator = new Function(...options.keys(), "return " + r.when);
-            const result = evaluator(...options.values());
+            const result = new Function(
+                ...options.keys(),
+                "return " + (r.when?.toRegex() ?? "true")
+            )(...options.values());
             if (result === "false") return false;
             return Boolean(result);
         });

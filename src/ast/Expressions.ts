@@ -16,13 +16,9 @@ import type {ExprNode} from "./Structure.ts";
 
 export class TermsNode implements ExprNode {
     constructor(public terms: ExprNode[]) {}
-}
 
-export class AndNode implements ExprNode {
-    constructor(
-        public left: ExprNode,
-        public right: ExprNode
-    ) {}
+    toRegex = () =>
+        this.terms.map(t => t.toRegex()).join('');
 }
 
 export class OrNode implements ExprNode {
@@ -30,22 +26,28 @@ export class OrNode implements ExprNode {
         public left: ExprNode,
         public right: ExprNode
     ) {}
-}
 
-export class ComparisonNode implements ExprNode {
-    constructor(
-        public left: ExprNode,
-        public op: string,
-        public right: ExprNode,
-    ) {}
+    toRegex = () =>
+        `(${this.left.toRegex()}|${this.right.toRegex()})`;
 }
 
 export class GroupNode implements ExprNode {
     constructor(public inner: ExprNode) {}
+
+    toRegex = () =>
+        `(${this.inner.toRegex()})`;
 }
 
 export class NotNode implements ExprNode {
     constructor(public inner: ExprNode) {}
+
+    toRegex(){
+        if (this.inner instanceof CharsetNode)
+            return `[^${this.inner.toString()}]`;
+        if (this.inner instanceof StringNode)
+            return [...this.inner.value].map(c => `[^${c}]`).join('');
+        return this.inner.toRegex();
+    }
 }
 
 export class QuantificationNode implements ExprNode {
@@ -54,6 +56,22 @@ export class QuantificationNode implements ExprNode {
         public from: number,
         public to?: number
     ) {}
+
+    toRegex() {
+        const term = this.inner.toRegex();
+        const f = this.from, t = this.to;
+        if (f == 0 && t == 1)
+            return `${term}?`;
+        if (f == 1 && t == undefined)
+            return `${term}+`;
+        if (f == 0 && t == undefined)
+            return `${term}*`;
+        if (f == t)
+            return `${term}{${f}}`;
+        if (t == undefined)
+            return `${term}{${f},}`;
+        return `${term}{${f},${t}}`;
+    }
 }
 
 interface Range {from: number, to: number}
@@ -66,14 +84,25 @@ export class CharsetNode implements ExprNode {
                 const c = value.charCodeAt(0);
                 this.ranges.push({from: c, to: c + 1});
             } else {
-                value.to += 1;
-                this.ranges.push(value);
+                this.ranges.push({from: value.from, to: value.to + 1});
             }
         }
         this.normalize();
     }
+    private static of(...ranges: Range[]) {
+        const node = new CharsetNode();
+        node.ranges = structuredClone(ranges);
+        node.normalize();
+        return node;
+    }
 
-    toRegex() {
+    toRegex = () => {
+        const s = this.toString();
+        return s.length <= 1
+            ? s
+            : `[${s}]`;
+    }
+    toString() {
         return this.ranges
             .map(r => ({from: String.fromCharCode(r.from), to: String.fromCharCode(r.to - 1)}))
             .map(r => r.from === r.to? r.from : `${r.from}-${r.to}`)
@@ -81,9 +110,7 @@ export class CharsetNode implements ExprNode {
     }
 
     union(right: CharsetNode) {
-        this.ranges = this.ranges.concat(right.ranges);
-        this.normalize();
-        return this;
+        return CharsetNode.of(...this.ranges, ...right.ranges);
     }
     difference(right: CharsetNode) {
         const events = this.ranges
@@ -103,8 +130,7 @@ export class CharsetNode implements ExprNode {
             else if (score === 0 && e.d === -1)
                 result.push({from: lastStart, to: e.pos});
         });
-        this.ranges = result;
-        return this;
+        return CharsetNode.of(...result);
     }
 
     private normalize() {
@@ -124,4 +150,7 @@ export class CharsetNode implements ExprNode {
 
 export class StringNode implements ExprNode {
     constructor(public value: string) {}
+
+    toRegex = () =>
+        this.value;
 }

@@ -4,10 +4,8 @@ import {insertTab} from "@codemirror/commands";
 import {skrypt} from "codemirror-lang-skrypt"
 import defaultText from "../examples/pl-Cyrl.skrypt?raw"
 import {BaseErrorListener} from "antlr4ng";
-import CodeGenerator from "./CodeGenerator.js";
 import {parseRules, transformText} from "./Driver.js";
 
-const codeGenerator = new CodeGenerator();
 let functions = [];
 
 class EchoErrorListener extends BaseErrorListener {
@@ -91,6 +89,9 @@ document.getElementById("transformBtn").onclick = () => {
 
 document.getElementById("generateJSBtn").onclick = () => {
     if (functions.length === 0) return;
-    document.getElementById("outputText").value = codeGenerator.render(functions);
+    const code = [`import {collectMatches, buildString} from "./Skrypt.js"`, ``];
+    for (const func of functions)
+        code.push(...func.emitJS());
+    document.getElementById("outputText").value = code.join('\n');
     Metro.notify.create("Function was composed in Output field.", "Generated");
 }
