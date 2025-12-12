@@ -14,11 +14,18 @@
 
 import type {ExprNode} from "./Structure.ts";
 
+export const is = (obj: any, classes: Function[]) =>
+    classes.some(cls => obj instanceof cls);
+
 export class TermsNode implements ExprNode {
     constructor(public terms: ExprNode[]) {}
 
     toRegex = () =>
-        this.terms.map(t => t.toRegex()).join('');
+        this.terms.map(t => {
+            if (t instanceof OrNode)
+                return `(${t.toRegex()})`;
+            return t.toRegex();
+        }).join('');
 }
 
 export class OrNode implements ExprNode {
@@ -28,7 +35,7 @@ export class OrNode implements ExprNode {
     ) {}
 
     toRegex = () =>
-        `(${this.left.toRegex()}|${this.right.toRegex()})`;
+        `${this.left.toRegex()}|${this.right.toRegex()}`;
 }
 
 export class GroupNode implements ExprNode {
@@ -58,7 +65,9 @@ export class QuantificationNode implements ExprNode {
     ) {}
 
     toRegex() {
-        const term = this.inner.toRegex();
+        let term = this.inner.toRegex();
+        if (is(this.inner, [TermsNode, OrNode, NotNode, StringNode]))
+            term = `(${term})`;
         const f = this.from, t = this.to;
         if (f == 0 && t == 1)
             return `${term}?`;
