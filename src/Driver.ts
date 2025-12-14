@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {BaseErrorListener, CharStream, CommonTokenStream} from "antlr4ng";
+import {CharStream, CommonTokenStream} from "antlr4ng";
 import {SkryptLexer} from "../lib/SkryptLexer.ts";
 import {SkryptParser} from "../lib/SkryptParser.ts";
 // @ts-ignore
 import {buildString, collectMatches} from "../public/Skrypt.js";
 import type {FunctionDef} from "./ast/Structure.ts";
-import ASTBuilder, {SemanticError} from "./ast/ASTBuilder.ts";
+import ASTBuilder from "./ast/ASTBuilder.ts";
+import EchoErrorListener, {SemanticError} from "./ErrorHandling.ts";
 
 export function parseRules(
     code: string,
-    errorListener: BaseErrorListener | null = null,
-    handler: (line: number, column: number, msg: string) => void = () => {}
+    errorListener: EchoErrorListener | null = null
 ) {
     const chars = CharStream.fromString(code);
     const lexer = new SkryptLexer(chars);
@@ -44,7 +44,7 @@ export function parseRules(
         return visitor.functions;
     } catch (e: unknown) {
         if (e instanceof SemanticError)
-            handler(e.line, e.column, e.message);
+            errorListener?.semanticError(e.start.line, e.start.start, e.end.stop, e.message);
         return [];
     }
 }

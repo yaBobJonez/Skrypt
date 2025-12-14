@@ -55,7 +55,7 @@ import {
 import {type ExprNode, FunctionDef, Pattern, Rule} from "./Structure.ts";
 import {
     CharsetNode,
-    GroupNode,
+    GroupNode, is,
     NotNode,
     OrNode,
     QuantificationNode,
@@ -70,16 +70,7 @@ import {
     WhenNotNode,
     WhenOrNode
 } from "./WhenExpressions.ts";
-
-export class SemanticError extends Error {
-    constructor(
-        public line: number,
-        public column: number,
-        message: string,
-    ) {
-        super(message);
-    }
-}
+import {SemanticError} from "../ErrorHandling.ts";
 
 export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
     functions = [new FunctionDef("transform")];
@@ -105,7 +96,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
             this.flags = "giu";
         else if (name === "function") {
             if (values.length < 1)
-                throw new SemanticError(ctx.start!.line, ctx.start!.column,
+                throw new SemanticError(ctx.start!, ctx.stop!,
                     `Function directive expects function name`);
             if (this.currFunc().isEmpty())
                 this.functions.pop();
@@ -114,7 +105,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         }
         else if (name === "stage")
             this.currFunc().newStage();
-        else throw new SemanticError(ctx.start!.line, ctx.start!.column,
+        else throw new SemanticError(ctx.start!, ctx.stop!,
             `Unsupported directive: ${name}\n`);
 
         return null;
@@ -259,23 +250,26 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         const right = this.visit(ctx._r!)!;
         if (left instanceof CharsetNode && right instanceof CharsetNode)
             return left.difference(right);
-        throw new SemanticError(ctx.start!.line, ctx.start!.column,
+        throw new SemanticError(ctx.start!, ctx.stop!,
             "Cannot resolve difference of non-charset terms.");
+    }
+    descendingNegation = (node: ExprNode, ctx: NotContext): ExprNode => {
+        if (node instanceof TermsNode)
+            return new TermsNode(node.terms.map(t => this.descendingNegation(t, ctx)));
+        if (node instanceof OrNode)
+            return new OrNode(this.descendingNegation(node.left, ctx), this.descendingNegation(node.right, ctx));
+        if (node instanceof GroupNode)
+            return new GroupNode(this.descendingNegation(node.inner, ctx));
+        if (node instanceof NotNode)
+            return this.descendingNegation(node.inner, ctx);
+        if (is(node, [CharsetNode, StringNode]))
+            return new NotNode(node);
+        throw new SemanticError(ctx.start!, ctx.stop!,
+            `Negating ${node.toRegex()} is unsupported.`);
     }
     visitNot = (ctx: NotContext) => {
         const inner = this.visit(ctx.term())!;
-        if (inner instanceof TermsNode)
-            return new TermsNode(inner.terms.map(t => new NotNode(t)));
-        if (inner instanceof OrNode)
-            return new OrNode(new NotNode(inner.left), new NotNode(inner.right));
-        if (inner instanceof GroupNode)
-            return new GroupNode(new NotNode(inner.inner));
-        if (inner instanceof NotNode)
-            return inner.inner;
-        if (inner instanceof QuantificationNode)
-            throw new SemanticError(ctx.start!.line, ctx.start!.column,
-                `Negating ${inner.toRegex()} is unsupported.`);
-        return new NotNode(inner);
+        return this.descendingNegation(inner, ctx);
     }
     visitQuantification = (ctx: QuantificationContext) => {
         const inner = this.visit(ctx.term())!;
@@ -284,7 +278,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
             const from = this.getNumber(q._from_!);
             const to = this.getNumber(q._to!);
             if (from > to)
-                throw new SemanticError(q.start!.line, q.start!.column,
+                throw new SemanticError(q.start!, q.stop!,
                     "Numbers out of order in quantifier range.");
             return new QuantificationNode(inner, from, to);
         }
@@ -301,7 +295,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
             case '+': return new QuantificationNode(inner, 1);
             case '*': return new QuantificationNode(inner, 0);
         }
-        throw new SemanticError(q.start!.line, q.start!.column, "Unrecognized quantifier.");
+        throw new SemanticError(q.start!, q.stop!, "Unrecognized quantifier.");
     }
     visitOrGroup = (ctx: OrGroupContext) => {
         const set: {from: number, to: number}[] = [];
@@ -310,7 +304,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
                 const from = this.renderChar(el._l!.text!).charCodeAt(0);
                 const to = this.renderChar(el._r!.text!).charCodeAt(0);
                 if (from > to)
-                    throw new SemanticError(ctx.start!.line, ctx.start!.column,
+                    throw new SemanticError(ctx.start!, ctx.stop!,
                         "Range characters are not in order.");
                 set.push({from, to});
             } else el._chars.map(t => {
@@ -324,7 +318,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
         const name = this.visit(ctx.lhs_chars())!.toRegex();
         if (this.templates.has(name))
             return this.templates.get(name)!;
-        throw new SemanticError(ctx.start!.line, ctx.start!.column,
+        throw new SemanticError(ctx.start!, ctx.stop!,
             `Template ${name} is not defined.`);
     }
     visitAnyLetter = (ctx: AnyLetterContext) => {
@@ -335,7 +329,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
     visitAnchor = (ctx: AnchorContext) => {
         if (this.blockExprStack.length > 0)
             return this.blockExprStack.at(-1)!;
-        throw new SemanticError(ctx.start!.line, ctx.start!.column,
+        throw new SemanticError(ctx.start!, ctx.stop!,
             "Illegal use of anchor outside block.");
     }
     visitLhsChars = (ctx: LhsCharsContext) =>
