@@ -1,4 +1,4 @@
-// Copyright 2025 Mykhailo Stetsiuk
+// Copyright 2025–2026 Mykhailo Stetsiuk
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -11,6 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+import {NotNode, OrNode} from "./Expressions.ts";
 
 export interface Node {
     emitJS(): string[];
@@ -130,13 +132,30 @@ export class Pattern implements ExprNode {
         this.inner = inner;
     }
 
+    wrap = (exprs: ExprNode[])=>
+        (
+            exprs.length > 1
+            ? exprs.map(e => e instanceof OrNode ? `(${e.toRegex()})` : e.toRegex())
+            : exprs.map(e => e.toRegex())
+        ).join('');
+
     toRegex() {
+        let lb = this.lookbehind;
+        let la = this.lookahead;
         let match = "";
-        if (this.lookbehind.length > 0)
-            match += `(?<=${ this.lookbehind.map(e => e.toRegex()).join('') })`;
+        if (lb.length > 0) {
+            if (lb.every(e => e instanceof NotNode))
+                match += `(?<!${this.wrap(lb.map(e => e.inner))})`;
+            else
+                match += `(?<=${this.wrap(lb)})`;
+        }
         match += this.inner.toRegex();
-        if (this.lookahead.length > 0)
-            match += `(?=${ this.lookahead.map(e => e.toRegex()).join('') })`;
+        if (la.length > 0) {
+            if (la.every(e => e instanceof NotNode))
+                match += `(?!${this.wrap(la.map(e => e.inner))})`
+            else
+                match += `(?=${this.wrap(la)})`;
+        }
         return match;
     }
 }

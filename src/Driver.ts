@@ -1,4 +1,4 @@
-// Copyright 2025 Mykhailo Stetsiuk
+// Copyright 2025–2026 Mykhailo Stetsiuk
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,16 +50,19 @@ export function parseRules(
 }
 
 export function transformText(func: FunctionDef, text: string) {
+    const params = func.options.keys().toArray();
+    const args = func.options.values().map(v => {
+        if (v === "true") return true;
+        if (v === "false") return false;
+        if (!isNaN(Number(v))) return Number(v);
+        return v;
+    }).toArray();
     for (const stage of func.stages) {
         if (stage.isEmpty()) continue;
-        const options = func.options;
         const rules = stage.rules.filter(r => {
-            const result = new Function(
-                ...options.keys(),
-                "return " + (r.when?.toRegex() ?? "true")
-            )(...options.values());
-            if (result === "false") return false;
-            return Boolean(result);
+            const body = `return ${r.when?.toRegex() ?? "true"};`;
+            const f = new Function(...params, body);
+            return Boolean(f(...args));
         });
         const slots = collectMatches(text, rules);
         text = buildString(text, slots);

@@ -1,4 +1,4 @@
-// Copyright 2025 Mykhailo Stetsiuk
+// Copyright 2025–2026 Mykhailo Stetsiuk
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -308,7 +308,7 @@ export default class ASTBuilder extends SkryptParserVisitor<ExprNode | null> {
                         "Range characters are not in order.");
                 set.push({from, to});
             } else el._chars.map(t => {
-                const code = this.normalizeChar(t.text!).charCodeAt(0);
+                const code = this.renderChar(t.text!).charCodeAt(0);
                 set.push({from: code, to: code});
             });
         });
