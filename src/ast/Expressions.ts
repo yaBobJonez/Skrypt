@@ -51,8 +51,22 @@ export class NotNode implements ExprNode {
     toRegex(){
         if (this.inner instanceof CharsetNode)
             return `[^${this.inner.toString()}]`;
-        if (this.inner instanceof StringNode)
+        if (this.inner instanceof StringNode) {
+            const s = this.inner.value;
+            if (s === "\\d")
+                return "\\D";
+            if (s === "\\D")
+                return "\\d";
+            if (s === "\\s")
+                return "\\S";
+            if (s === "\\S")
+                return "\\s";
+            if (/^\\p\{[A-Za-z_][A-Za-z0-9_]*\}$/.test(s))
+                return s.replace("\\p{", "\\P{");
+            if (/^\\P\{[A-Za-z_][A-Za-z0-9_]*\}$/.test(s))
+                return s.replace("\\P{", "\\p{");
             return [...this.inner.value].map(c => `[^${c}]`).join('');
+        }
         return this.inner.toRegex();
     }
 }

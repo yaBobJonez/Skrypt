@@ -1,7 +1,7 @@
 {
   "name": "skrypt-web",
   "private": true,
-  "version": "1.2.5",
+  "version": "1.3.0",
   "description": "A demo web implementation of the Skrypt language",
   "homepage": "https://yabobjonez.github.io/skrypt",
   "repository": "https://github.com/yaBobJonez/skrypt-web",
@@ -17,17 +17,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@codemirror/commands": "^6.10.3",
-    "@codemirror/view": "^6.41.1",
+    "@codemirror/commands": "^6.10.4",
+    "@codemirror/view": "^6.43.6",
     "@olton/metroui": "^5.1.20",
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.1.1",
     "antlr4ng": "^3.0.16",
     "codemirror": "^6.0.2",
     "codemirror-lang-skrypt": "^1.3.0"
   },
   "devDependencies": {
-    "typescript": "^6.0.3",
-    "vite": "^8.0.10",
-    "vitest": "^4.1.5"
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   }
 }
