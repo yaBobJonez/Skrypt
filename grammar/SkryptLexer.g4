@@ -1,4 +1,4 @@
-// Copyright 2025 Mykhailo Stetsiuk
+// Copyright 2025–2026 Mykhailo Stetsiuk
 // SPDX-License-Identifier: Apache-2.0
 
 lexer grammar SkryptLexer;
@@ -62,7 +62,7 @@ String_CHAR     : '\\' [rnt]            // Leave | Render
 
 mode RHS ;
 
-Rhs_COMMENT     : COMMENT   -> type(COMMENT) ;
+Rhs_COMMENT     : COMMENT   -> type(COMMENT), channel(HIDDEN) ;
 
 Rhs_QUESTION    : QUESTION  -> type(QUESTION), mode(When) ;
 VOID            : '{}' | '∅' ;
@@ -79,7 +79,7 @@ Rhs_CHAR        : '\\u' HEX HEX HEX HEX     // Render
 
 mode When ;
 
-When_COMMENT    : COMMENT   -> type(COMMENT) ;
+When_COMMENT    : COMMENT   -> type(COMMENT), channel(HIDDEN) ;
 
 When_LPAREN     : LPAREN    -> type(LPAREN) ;
 When_RPAREN     : RPAREN    -> type(RPAREN) ;

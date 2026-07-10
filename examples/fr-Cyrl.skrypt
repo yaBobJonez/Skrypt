@@ -1,0 +1,812 @@
+# Cyrillic French
+# ===============
+
+@ compatMode		= true
+@ tryToGuessE		= true
+@ yerSolidification	= 0
+@ removeFinalNasals	= false
+@ phoneticize		= true
+
+% svy		= <eéèêëiîïyÿ>
+% vy		= <aàâæoôœuûùü>|{svy}
+% c			= <bcçdfghjklmnpqrstvwxz>
+% cy		= {c}|y
+% letters	= {c}|{vy}
+
+
+### "ch" — "х"
+/achaine(s)?/	→	aхaine
+/achéen(s)?/	→	aхéen
+/achène(s)?/	→	aхène
+/achéron	→	aхéron
+/achillée(s)?/	→	aхillée
+/achilléine(s)?/	→	aхilléine
+/achilléomancie(s)?/	→	aхilléomancie
+/achilléomancien(s)?/	→	aхilléomancien
+/achilléomantique(s)?/	→	aхilléomantique
+cht(h)?on	→	хton
+/achthéo	→	aхthéo
+/anavlochos/	→	anavloхos
+/antioch	→	antioх
+/arachn	→	araхn
+archaï	→	arхaï
+/archang	→	arхang
+arché[<ogt>]	→	arхé
+/archont	→	arхont
+auroch	→	auroх
+/azéradach(s)?/	→	azéradaх
+/bacchylide(s)?/	→	bakхylide
+/brouchéion(s)?/	→	brouхéion
+/chaldé	→	хaldé
+/chaol	→	хaol
+/chaomancie(s)?/	→	хaomancie
+/chaot	→	хaot
+/chaos/	→	хaos
+/chaosphère(s)?/	→	хaosphère
+/charism	→	хarism
+/charites/	→	хarites
+/charybde(s)?/	→	хarybde
+chélid	→	хélid
+/chéloïde(s)?/	→	хéloïde
+/chélydre(s)?/	→	хélydre
+/cherson	→	хerson
+/chiasm	→	хiasm
+/chilio	→	хilio
+/chilia	→	хilia
+/chilo	→	хilo
+/chiro	→	хiro
+chiral	→	хiral
+/chiton(s)?/	→	хiton
+/chitin	→	хitin
+chlor	→	хlor
+/chœni	→	хœni
+/choinix/	→	хoinix
+/chénice(s)?/	→	хénice
+/chénisque(s)?/	→	хénisque
+/chœur(s)?/	→	хœur
+/choral(s)?/	→	хoral
+/choraux/	→	хoraux
+/choriste(s)?/	→	хoriste
+cholér	→	хolér
+cholestér	→	хolestér
+chor[<eéèoi>]	→	хoré
+/chorus/	→	хorus
+chré	→	хré
+/chrême(s)?/	→	хrême
+christ	→	хrist
+chro	→	хro
+/chry	→	хry
+cochl	→	coхl
+/cromelech(s)?/	→	cromeleх
+/dichot	→	diхot
+ecch	→	ekх
+/échécrate(s)?/	→	éхécrate
+/écho(s)?/	→	éхo
+/anécho	→	anéхo
+/autoécho	→	autoéхo
+/écho[<gïkl>]	→	éхo
+/échom[<éèi>]	→	éхom
+/échop[~p]	→	éхop
+/échot	→	éхot
+/épiché	→	épiхé
+/épicho	→	épiхo
+/exarchopoulos/	→	exarхopoulos
+/fuchsin(s)?/	→	fuхsin
+/icht	→	iхt
+/maastricht	→	maastriхt
+/ischém	→	isхém
+ischi[~u]	→	isхi
+/jéricho(s)?/	→	jériхo
+/krach(s)?/	→	kraх
+/lichen[~t]	→	liхen
+/phycolichen(s)?/	→	phycoliхen
+/machaon(s)?/	→	maхahon # "aon" — "аон"
+/ochlo	→	oхlo
+/œnochoé(s)?/	→	œnoхoé
+/onycho	→	onyхo
+/orchest	→	orхest
+/orchi	→	orхi
+/cryptorchid	→	cryptorхid
+/orichal	→	oriхal
+/aurichal	→	auriхal
+/pachyptile(s)?/	→	paхyptile
+/polychreste(s)?/	→	polyхreste
+psych[~(ie|iq)]	→	psyх
+/schénanthe(s)?/	→	sхénanthe
+schizo	→	sхizo
+/schol	→	sхol
+splanch	→	splanх
+/stésichore(s)?/	→	stésiхore
+/stœchio	→	stœхio
+/strych	→	stryх
+tech(s)?/	→	teх
+techn	→	teхn
+/tétrachire(s)?/	→	tétraхire
+/varech(s)?/	→	vareх
+/vrachasi(s)?/	→	vraхasi
+### "c"œ — "с"
+/cœruléolactite(s)?/	→	sœruléolactite
+### "gn" — "гн"
+/gnaphale(s)?/	→	ghnaphale
+/gnat	→	ghnat
+gnathe(s)?/	→	ghnathe
+/gnavelle(s)?/	→	ghnavelle
+/gneiss	→	ghneiss
+/gnetum(s)?/	→	ghnetum
+/gnewitz/	→	ghnewitz
+/gnétacée(s)?/	→	ghnétacée
+[~i]gnom	→	ghnom
+gnos[~q]	→	ghnos
+/gnou(s)?/	→	ghnou
+### "j" — "й"
+/fjord	→	fyord
+### "j" — "х"
+/jota(s)?/	→	хota
+/marijuana(s)?/	→	mariхuana
+### "s" — "с"
+/antis	→	antiss
+/paras[it]	→	parass
+vraisembl	→	vraissembl
+### "s" — "з"
+/alsace(s)?/	→	alzace
+### "s" — ø
+/mesd[<ai>]	→	med
+/mesdemoiselles/	→	medmoiselles
+/debusclin(s)?/	→	debuclin
+/descartes/	→	decartes
+### "sc" — "ш"
+fascis	→	fachis
+### "x" — ø
+/auxdit(s)?/	→	audit
+/auxquel	→	auquel
+### "x" — "с"
+/auxais/	→	aussais
+/auxelles/	→	ausselles
+/auxer	→	ausser
+/auxi(s)?/	→	aussi
+auxoi	→	aussoi
+/auxon(s)?/	→	ausson
+/auxonne(s)?/	→	aussonne
+/auxonnais/	→	aussonnais
+/bruxell	→	brussell
+/coccyx/	→	coccys
+/dix/	→	dis
+/dixain	→	dissain
+/dixante(s)?/	→	dissante
+/dixen	→	dissen
+/dixième	→	dissième
+/six/	→	sis
+/sixain	→	sissain
+/sixen	→	sissen
+/sixième	→	sissième
+/sixiémisme(s)?/	→	sissiémisme
+/soixant	→	soissant
+### "ae" — "аэ"
+/maestro(s)?/	→	mahestro
+/paella(s)?/	→	pahella
+/paellera(s)?/	→	pahellera
+### "ai" — "ъ"/"е"
+/faisan(s)?/	→	fesan
+/faisons/	→	fesons
+### "ao" — "о"
+/curaçao(s)?/	→	curaço
+/saône(s)?/	→	sone
+### "aou"/"aoû" — "у"
+/aout(s)?/	→	out
+/août(s)?/	→	out
+saoul	→	soul
+saoûl	→	soul
+### "ay" — "ай"
+/bay	→	bahy
+/mayo	→	mahyo
+/papay	→	papahy
+### "e" — "є"
+/clef(s)?/	→	cléf
+/et(s)?/	→	ét
+### "e" — "а"
+emment(s)?/	→	amment
+/femm	→	famm
+/sage(s)?(\-)?femme(s)?/	→	sagefamme
+solenn	→	solann
+### "e" — "ө"
+/gennevilliers/	→	jœunnevilliers
+/gennevillois/	→	jœunnevillois
+### "ee" — "є"
+/pedigree(s)?/	→	pedigré
+### "œ" — "оє"
+/lœri(s)?/	→	loéri
+### "œ" — "ө"
+/lœss	→	lœuss
+### "œ" — "у"
+/lœve(s)?/	→	louve
+### "oe"/"oë" — "уа"
+/mo<eë>lle(s)?/	→	moille
+/mo<eë>llon(s)?/	→	moillon
+/mo<eë>lleux/	→	moilleux
+### "oe" — "ө"
+/foehn	→	fœhn
+### "oë" — "оє"
+/canoë(s)?/	→	canoé
+/goëmon	→	goémon
+/goëlette(s)?/	→	goélette
+### "oë" — "уэ"
+/foën	→	fouehn
+/oeyre	→	oueyre
+/plancoët	→	plancouet
+### "oë" — "уа"
+/voëvre(s)?/	→	vouavre
+### "oi" — "о"
+/encoignure(s)?/	→	encognure
+/oignon	→	ognon
+### "oi" — "ой"
+/séquoia(s)?/	→	séquohia
+### "ou" — "оу"
+/pseudouridimycine(s)?/	→	pseudohuridimycine
+### "oy" — "ой"/"ои"
+/ayoye(s)?/	→	ahyohye
+/cowboy(s)?/	→	cowbohy
+/goyave(s)?/	→	gohyave
+/moyse(s)?/	→	mohyse
+### "gui" — "гюи", "qui" — "кюи"
+/aiguillage(s)?/	→	aigüillage
+/aiguille(s)?/	→	aigüille
+/aiguiller(s)?/	→	aigüiller
+/aiguillette(s)?/	→	aigüillette
+/aiguillon(s)?/	→	aigüillon
+/aiguiser(s)?/	→	aigüiser
+/linguist	→	lingüist
+/unguis/	→	ongüis # "un" — "о̃"
+/équilatéral/	→	éqüilatéral
+/équilatéraux/	→	éqüilatéraux
+/obliquité(s)?/	→	obliqüité
+/quia(s)?/	→	qüia
+/ubiqui	→	ubiqüi
+### "uy" — "юй"
+/ahuy(s)?/	→	ahulli
+/berruyer(s)?/	→	berruhyer
+/berruyère(s)?/	→	berruhyère
+/bruyéreuse(s)?/	→	bruhyéreuse
+/bruyéreux/	→	bruhyéreux
+/caluyau/	→	caluhyau
+/écuyer(s)?/	→	écuhyer
+/écuyère(s)?/	→	écuhyère
+/embruyer(s)?/	→	embruhyer
+/gruyer(s)?/	→	gruhyer
+/gruyère(s)?/	→	gruhyère
+/thuya(s)?/	→	thuhya
+/thuyone(s)?/	→	thuhyone
+/truyère(s)?/	→	truhyère
+/truyes/	→	truhyes
+/tuya(s)?/	→	tuhya
+/tuyautage(s)?/	→	tuhyautage
+/zhuyin(s)?/	→	zhuhyin
+### "uy" — "уй"
+/buyon(s)?/	→	bouyon
+/buyonnais/	→	bouyonnais
+/gikuyu(s)?/	→	gikouyu
+/kikuyu(s)?/	→	kikouyu
+/puyadin(s)?/	→	pouyadin
+### "uy" — "өй"
+/oeyreluy(s)?/	→	oeyreleuy
+### "aon" — "о̃"
+/chaon(s)?/	→	chon
+/chaonnais/	→	chonhais
+### "aon" — "аон"/"ао̃н"
+/claonais/	→	clahonais
+/gaonat(s)?/	→	gahonat
+/graonnais/	→	grahonnais
+/haonnois/	→	hahonnois
+/jaonnais/	→	jahonnais
+/kaonique(s)?/	→	kahonique
+/laone(s)?/	→	lahone
+/lycaonie(s)?/	→	lycahonie
+/lycaonien(s)?/	→	lycahonien
+/pharaonique(s)?/	→	pharahonique
+/pharaonien(s)?/	→	pharahonien
+/pharaonne(s)?/	→	pharahonne
+/tétraonidé(s)?/	→	tétrahonidé
+/tétraonides/	→	tétrahonides
+/tétraoniné(s)?/	→	tétrahoniné
+/thaonnais/	→	thahonnais
+/arpaon(s)?/	→	arpahon
+/claon(s)?/	→	clahon
+/graon(s)?/	→	grahon
+/haon(s)?/	→	hahon
+/kaon(s)?/	→	kahon
+/lycaon(s)?/	→	lycahon
+/pharaon(s)?/	→	pharahon
+/thaon(s)?/	→	thahon
+/yanaon(s)?/	→	yanahon
+### "en" — "эн"
+/end(s)?/	→	ehnd
+/lichen(s)?/	→	lichehn
+/weekend(s)?/	→	weekehnd
+### "em" — "эм"
+/totem(s)?/	→	totehm
+### "er" — "өр"
+/leader(s)?/	→	leadeur
+/speaker(s)?/	→	speakeur
+### "ier" — "йэр"
+/hier(s)?/	→	hiehr
+/tier(s)?/	→	tiehr
+### Don't guess "fier"
+/fier(s)?/	→	фиер
+### "ew" — "уи"
+/chewing(s)?/	→	chouing
+### "ill" — "ил"
+/achille(s)?/	→	achile
+/bacille(s)?/	→	bacile
+/billevesée(s)?/	→	bilevesée
+/billion(s)?/	→	bilion
+/capillaire(s)?/	→	capilaire
+/codicille(s)?/	→	codicile
+/distill	→	distil
+/fibrill	→	fibril
+/gilles/	→	giles
+/illaire(s)?/	→	ilaire
+/krill(s)?/	→	kril
+/lille(s)?/	→	lile
+/lilliput	→	liliput
+/millage(s)?/	→	milage
+/mille(s)?/	→	mile
+/millefeuille(s)?/	→	milefeuille
+/millepertuis/	→	milepertuis
+/milletupl	→	miletupl
+/millée(s)?/	→	miље #an exception to "millé*"
+/millé	→	milé
+/milli	→	mili
+/oscill	→	oscil
+/pénicilline(s)?/	→	péniciline
+/pénicillinase(s)?/	→	pénicilinase
+/scille(s)?/	→	scile
+/scillarine(s)?/	→	scilarine
+/scillitique(s)?/	→	scilitique
+/scilline(s)?/	→	sciline
+/scillirosidine(s)?/	→	scilirosidine
+/scilliroside(s)?/	→	sciliroside
+/spongille(s)?/	→	spongile
+/tranquill	→	tranquil
+/vexill	→	vexil
+vill	→	vil
+/whatmille(s)?/	→	whatmile
+# TODO; unchecked beyond this point
+### "in" — "ин"
+/sprint(s)?/	→	sprihnt
+### "on" — "он"
+/canyon(s)?/	→	canyohn
+### "on" — "е/ъ"
+/monsieur/	→	mecieur
+### "mn" — "н"
+automn	→	auton
+damn	→	dan
+### silent "t"
+/hautbois/	→	haubois
+/asthme(s)?/	→	asme
+### "ow" — "у"
+/clown(s)?/	→	cloun
+### "ow" ­— "оу"
+/koweït(s)?/	→	kohoueït
+### "qu" — "ку"
+/adéquat	→	adéqouat
+/aqua	→	aqoua
+/équanime(s)?/	→	éqouanime
+/équanimité(s)?/	→	éqouanimité
+/équateur(s)?/	→	éqouateur
+/équatif(s)?/	→	éqouatif
+/équation(s)?/	→	éqouation
+/équationnel(s)?/	→	éqouationnel
+/équator	→	éqouator
+/péréquation(s)?/	→	péréqouation
+/qua(s)?/	→	qoua
+/quadrature(s)?/	→	qouadrature
+/quadri	→	qouadri
+/quadru	→	qouadru
+/quartidi(s)?/	→	qouartidi
+/quaternaire(s)?/	→	qouaternaire
+/quatuor(s)?/	→	qouatuor
+/quid(s)?/	→	qouid
+/quos/	→	qouos
+/squa	→	sqoua
+/quoque(s)?/	→	qouoqoue
+### "um" — "ом"
+/album(s)?/	→	albohm
+/aquarium(s)?/	→	aquariohm
+/atrium(s)?/	→	atriohm
+/auditorium(s)?/	→	auditoriohm
+/cæcum(s)?/	→	cæcohm
+/cæsium(s)?/	→	cæsiohm
+/capharnaüm(s)?/	→	capharnaüm
+/circum(s)?/	→	circohm
+/compendium(s)?/	→	compendiohm
+/consortium(s)?/	→	consortiohm
+/crématorium(s)?/	→	crématoriohm
+/curriculum(s)?/	→	curriculohm
+/delphinium(s)?/	→	delphiniohm
+/décorum(s)?/	→	décorohm
+/diluvium(s)?/	→	diluviohm
+/duumvir(s)?/	→	duohmvir
+/duumvirat(s)?/	→	duohmvirat
+/extremum(s)?/	→	extremohm
+/forum(s)?/	→	forohm
+/funérarium(s)?/	→	funérariohm
+/galbanum(s)?/	→	galbanohm
+/herculanum(s)?/	→	herculanohm
+/impedimentum(s)?/	→	impedimentohm
+/infundibulum(s)?/	→	infundibulohm
+/lactucarium(s)?/	→	lactucariohm
+/magnésium(s)?/	→	magnésiohm
+/magnum(s)?/	→	magnohm
+/maximum(s)?/	→	maximohm
+/médium(s)?/	→	médiohm
+/minium(s)?/	→	miniohm
+/muséum(s)?/	→	muséohm
+/oïdium(s)?/	→	oïdiohm
+/parabellum(s)?/	→	parabellohm
+/pensum(s)?/	→	pensohm
+/péplum(s)?/	→	péplohm
+/philtrum(s)?/	→	philtrohm
+/podium(s)?/	→	podiohm
+/pomœrium(s)?/	→	pomœriohm
+/postscriptum(s)?/	→	postscriptohm
+/proctodeum(s)?/	→	proctodeohm
+/pygidium(s)?/	→	pygidiohm
+/quantum(s)?/	→	quantohm
+/quorum(s)?/	→	quorohm
+/rectum(s)?/	→	rectohm
+/référendum(s)?/	→	référendohm
+/sanatorium(s)?/	→	sanatoriohm
+/scriptorium(s)?/	→	scriptoriohm
+/scrotum(s)?/	→	scrotohm
+/sébum(s)?/	→	sébohm
+/sélénium(s)?/	→	séléniohm
+/sérum(s)?/	→	sérohm
+/silicium(s)?/	→	siliciohm
+/solarium(s)?/	→	solariohm
+/spéculum(s)?/	→	spéculohm
+/stratum(s)?/	→	stratohm
+/terrarium(s)?/	→	terrariohm
+/thermopolium(s)?/	→	thermopoliohm
+/triumvirat(s)?/	→	triohmvirat
+/velum(s)?/	→	velohm
+/vivarium(s)?/	→	vivariohm
+/vulgum(s)?/	→	vulgohm
+### "un" — "юн"
+/betun(s)?/	→	betuhn
+/cunnilingus/	→	cuhnnilingus
+/mozambrun(s)?/	→	mozambruhn
+/rèbelun(s)?/	→	rèbeluhn
+/tun(s)?/	→	tuhn
+/verdun(s)?/	→	verduhn
+/yichun(s)?/	→	yichuhn
+### "un" — "он"
+/fun(s)?/	→	fohn
+/run(s)?/	→	rohn
+### "un" — "ун"
+/hunnu(s)?/	→	hounnu
+/inuktun(s)?/	→	inuktoun
+/kun(s)?/	→	koun
+/nun(s)?/	→	noun
+/qanun(s)?/	→	qanoun
+/shogun(s)?/	→	shogoun
+/tiqqun(s)?/	→	tiqqoun
+/ttakun(s)?/	→	ttakoun
+/ttun(s)?/	→	ttoun
+### "un" — "о̃"
+/avunculaire(s)?/	→	avonculaire
+/homuncule(s)?/	→	homoncule
+/infundibul	→	infondibul
+/nuncupation(s)?/	→	noncupation
+/punch(s)?/	→	ponch
+/secundo(s)?/	→	secondo
+### Foreign words
+/yacht(s)?/	→	yoхt
+/almanach(s)?/	→	almanaх
+/check(s)?/	→	tcheck
+/strech(s)?/	→	stretch
+/coach(s)?/	→	coatch
+/gin(s)?/	→	dgin
+/adagio(s)?/	→	adadgio
+/management(s)?/	→	manadgement
+/fjord(s)?/	→	fyord
+/football(s)?/	→	foutboll
+/lady(s)?/	→	lédy
+/okay(s)?/	→	okéy
+/business/	→	bizness
+/bazooka(s)?/	→	bazouka
+/cool(s)?/	→	coul
+/shampooing(s)?/	→	champouhing
+/alcool(s)?/	→	alcol
+/boskoop(s)?/	→	boskop
+/rooibos/	→	rohibos
+/spéculoos/	→	spéculos
+/mooré(s)?/	→	moré
+/zoo(s)?/	→	zo
+/tofu(s)?/	→	tofou
+/pudding(s)?/	→	poudding
+/club(s)?/	→	cleub
+/puzzle(s)?/	→	peuzzle
+/rhumerie(s)?/	→	rhomerie
+/brahman(s)?/	→	brahmahn
+/chaman(s)?/	→	chamahn
+/gentleman(s)?/	→	gentlemahn
+/tennisman(s)?/	→	tennismahn
+/naan(s)?/	→	naahn
+
+
+? phoneticize:
+  ### b
+  lomb(s)?/	→	plom
+  doub(s)?/	→	dou
+  /kemb(s)?/	→	kem
+  ### c
+  /estomac(s)?/	→	estoma
+  /porc(s)?/	→	por
+  tabac(s)?/	→	taba
+  /caoutchouc(s)?/	→	caoutchou
+  ### d
+  land(s)?/	→	lande
+  field(s)?/	→	fielde
+  head(s)?/	→	heade
+  ford(s)?/	→	forde
+  /david(s)?/	→	davide
+  /dread(s)?/	→	dreade
+  /leed(s)?/	→	leede
+  /mcdonald(s)?/	→	mcdonalde
+  /ombuds/	→	ombudse
+  wood(s)?/	→	woode
+  /raid(s)?/	→	raide
+  /raunds/	→	raundse
+  /sud(s)?/	→	sude
+  /amands/	→	amandse
+  shield(s)?/	→	shielde
+  /zid(s)?/	→	zide
+  ### f
+  clef(s)?	→	clé
+  /nerf(s)?/	→	ner
+  /boeufs/	→	boeu
+  /bœufs/	→	bœu
+  /piqueboeufs/	→	piqueboeu
+  /piquebœufs/	→	piquebœu
+  /oeufs/	→	oeu
+  /œufs/	→	œu
+  /cerfs/	→	cer
+  /zeitlofs/	→	zeitlo
+  ### g
+  /joug(s)?/	→	jou
+  ing(s)?/	→	inge
+  ### p
+  /cap(s)?/	→	cape
+  /cep(s)?/	→	cepe
+  /slip(s)?/	→	slipe
+  ### ct
+  /amict(s)?/	→	ami
+  spect(s)?/	→	spè
+  nct(s)?/	→	n
+  /éject(s)?/	→	éjè
+  /præfect(s)?/	→	præfè
+  /traict(s)?/	→	trai
+  ### st
+  /est(s)?/	→	è # "être" is more common than the noun
+  ### t
+  ct(s)?/	→	cte
+  pt(s)?/	→	pte
+  st(s)?/	→	ste
+  /brut(s)?/	→	brute
+  /dot(s)?/	→	dote
+  /huit(s)?/	→	huite
+  /déficit(s)?/	→	déficite
+  /granit(s)?/	→	granite
+  /yaourt(s)?/	→	yaourte
+  ### th
+  /bizuth(s)?/	→	bizu
+  /goth(s)?/	→	go
+  ### l
+  aulx/	→	au
+  /bacul(s)?/	→	bacu
+  /cul(s)?/	→	cu
+  /fils/	→	fis
+  /foutrecul(s)?/	→	foutrecu
+  /fusil(s)?/	→	fusi
+  /gentil(s)?/	→	genti
+  outil(s)?/	→	outi
+  saoul(s)?/	→	sou
+  saoûl(s)?/	→	sou
+  ### s
+  bus/	→	buse
+  /sens/	→	sense
+  /contresens/	→	contresense
+  /antisens/	→	antisense
+  /os/	→	osse
+  /ours/	→	ourse
+  /tennis/	→	tennisse
+  ### rs
+  /gars/	→	ga
+  ### x
+  /aix/	→	aixe
+  index/	→	indexe
+  pharynx/	→	pharynxe
+  ### z
+  zz/	→	zze
+  gaz/	→	gaze
+  /fez/	→	feze
+  /merguez/	→	mergueze
+;
+
+
+! stage
+
+ai<nm>[~{vy}]	→	е̃	? removeFinalNasals
+ai<nm>[{c}],
+ai[<nm>~{vy}]	→	е̃
+a<eë>n[~{vy}]	→	а̃	? removeFinalNasals
+a<eë>n[{c}],
+a<eë>[n~<vy>]	→	а̃
+ao[n({vy}|n)]	→	а
+aon			→	а̃	? removeFinalNasals
+aon[{c}],
+ao[n]		→	а̃
+ai[_?~l], aî	→	э
+an[~(<mn>|{vy})]	→	а̃	? removeFinalNasals
+an[{cy}-<mn>],
+a[n~(<mn>|{vy})],
+am[{cy}-<mn>]		→	а̃
+ae/		→	е
+ae		→	а
+a<uw>	→	о
+ay/, a[y], æ	→	э
+a, â, à		→	а
+b(b)?	→	б
+c[q]	→	{}
+ch		→	ш
+cc[{svy}|æ]	→	кс
+cc					→	к
+c[<\'’ʼæ>|{svy}],
+c[œ<cdlmnt>]		→	с
+#
+ç			→	с
+d(s)?/[h|{vy}]	→	т	? phoneticize
+d(s)?/			→	{}	? phoneticize
+d(d)?			→	д
+<ëe>[au|oi]		→	{}
+<ëe>i<nm>[~{vy}]	→	е̃	? removeFinalNasals
+<ëe>i<nm>[{c}],
+<ëe>i[<nm>~{vy}]	→	е̃
+<ëe><iî>[~l|_(_-l)],	# VERIFY _-l
+<ëe>[<iî>]													→	э
+<ëe>m[<bp>]		→	а̃
+[<éiy>]<ëe><nm>[t|c(æ|{svy})]		→	а̃
+<ëe><nm>[~(<mn>|{vy})]	→	е̃	? removeFinalNasals
+<ëe><nm>[{cy}-<mn>],
+<ëe>[<nm>~(<mn>|{vy})]	→	е̃
+<ëe>un[~{vy}]	→	ӫ		? removeFinalNasals & compatMode
+<ëe>un[~{vy}]	→	ө\u0303	? removeFinalNasals
+<ëe>un[{c}],
+<ëe>u[n~{vy}]	→	ӫ		? compatMode
+<ëe>u[n~{vy}]	→	ө\u0303
+<ëe><uû>	→	ө
+<ëe><ae>	→	и
+<ëe>w	→	ью
+<ëe>y/	→	э
+<ëe>y	→	эй
+<ëe>/[{cy}]	→	е	? phoneticize & yerSolidification > 0
+<ëe>/[{cy}]	→	ъ	? phoneticize
+<ëe>/			→	{}	? phoneticize
+<ëe>[{cy}({cy}-t)],
+<ëe>[<dhpstxz>t],
+<ëe>[x],
+<ëe>[<bcfgjklmqv>]/,
+[_]<ëe>[t]/					→	э	? tryToGuessE
+<ëe>[<dhpsxz>]/,
+<ëe>[<bcçfgjklmnqrvwy>t],
+[i]<ëe>[<dr>]/,
+/<ëe>[t]/					→	є	? tryToGuessE
+<ëe>[r]/	→	е	? tryToGuessE
+<ëe>	→	ъ	? tryToGuessE & yerSolidification < 0
+<ëe>	→	е	? tryToGuessE & yerSolidification > 0
+<ëe>/	→	ъ	? tryToGuessE
+<ëe>	→	е
+é	→	є
+è, ê	→	э
+f(f)?	→	ф
+ge[{vy}-<ëïüÿ>]		→	ж
+gni[{vy}-<ëïüÿ>], gn	→	нь
+g[g{svy}]	→	г
+g[g]				→	{}
+gu[<eéèêîiy>], gh	→	г
+g[<eéèêiîy>]	→	ж
+#
+h	→	{}
+[{vy}]ill,
+[{vy}]il/	→	љ
+/ill, il/	→	ил
+ill				→	иљ
+[u]ilh	→	ий
+ilh		→	й
+i[ng]	→	и
+i<nm>[~(<mn>|{vy})]	→	е̃	? removeFinalNasals
+i<nm>[{cy}-<mn>],
+i[<nm>~(<mn>|{vy})]	→	е̃
+i[e(r)?]/				→	и
+i[{vy}-<ëïüÿ>]	→	й
+i						→	и
+în[~{vy}]	→	е̃	? removeFinalNasals
+în[{c}]		→	е̃
+î[n~{vy}]	→	е̃
+î			→	и
+[{vy}]ï[{vy}], /ï	→	й
+ï					→	и
+j	→	ж
+k	→	к
+lli		→	й
+l(l)?	→	л
+m(m)?	→	м
+n(n)?	→	н
+<ôo><ië>n		→	уе̃	? removeFinalNasals
+<ôo><ië>n[_],
+<ôo><ië>[n]		→	уе̃
+<ôo><êiîŷ>	→	уа
+<ôo>[eu]	→	{}
+/<ôo>e		→	ө
+<ôo>ë	→	оэ
+/<ôo>y[{vy}]	→	ой
+/<ôo>y			→	о
+<ôo>y[{vy}]		→	уай
+<ôo>y			→	уа
+<ôo><nm>[~(<mn>|{vy})]	→	о̃	? removeFinalNasals
+<ôo><nm>[{cy}-<mn>],
+<ôo>[<nm>~(<mn>|{vy})]	→	о̃
+<ôo><uû>	→	у
+<ôo>w?	→	о
+œ[st]	→	э
+œ[{cy}]	→	є
+œ(u)?	→	ө
+ph	→	ф
+p(s)?/[h|{vy}]	→	п	? phoneticize
+p(s)?/								→	{}	? phoneticize
+p(p)?	→	п
+qu[<\'’ʼ>|{vy}], q	→	к
+r(r?h?)		→	р
+[{vy}]s[{vy}]	→	з
+sch		→	ш
+s/[h|{vy}]	→	з	? phoneticize
+s/								→	{}	? phoneticize
+sc[{svy}], s<çs>?		→	с
+[~_|s]ti[{vy}-<ëïüÿ>],
+ti[é]/							→	тй
+[~a]ti[e]/	→	ти
+ti[e]/		→	си
+ti[{vy}-<ëïüÿ>]		→	сй
+t(s)?/[h|{vy}]	→	т	? phoneticize
+t(s)?/								→	{}	? phoneticize
+t<ht>?	→	т
+<ûùu><nm>[~(<mn>|{vy})]	→	ӫ		? removeFinalNasals & compatMode
+<ûùu><nm>[~(<mn>|{vy})]	→	ө\u0303	? removeFinalNasals
+<ûùu><nm>[{cy}-<mn>],
+<ûùu>[<nm>~(<mn>|{vy})]	→	ӫ		? compatMode
+<ûùu>[<nm>~(<mn>|{vy})]	→	ө\u0303
+<ûùu>[y_]	→	юи
+<ûùu>, ü	→	ю
+v, w	→	в
+x[c{svy}|h]	→	к
+x/[h|{vy}]	→	з	? phoneticize
+x/								→	{}	? phoneticize
+x	→	кс
+y<nm>[~(<mn>|{vy})]	→	е̃	? removeFinalNasals
+y<nm>[{cy}-<mn>],
+y[<nm>~(<mn>|{vy})]	→	е̃
+y[{vy}-<ëïüÿ>]	→	й
+y, ÿ					→	и
+zh	→	ж
+z/[h|{vy}]	→	з	? phoneticize
+z/								→	{}	? phoneticize
+z	→	з
+
+! stage
+
+% letters	= <а-яөӫєљ>-<хцчщыя>
+% nasal		= а̃|е̃|ө\u0303|ӫ|о̃
+
+[{nasal}]c<сз>?/		→	{}	? phoneticize
+c(к)?		→	к
+[{nasal}]g<сз>?/		→	{}	? phoneticize
+g	→	г

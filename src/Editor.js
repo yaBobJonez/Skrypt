@@ -3,27 +3,10 @@ import {keymap} from "@codemirror/view"
 import {insertTab} from "@codemirror/commands";
 import {skrypt} from "codemirror-lang-skrypt"
 import defaultText from "../examples/pl-Cyrl.skrypt?raw"
-import {BaseErrorListener} from "antlr4ng";
-import CodeGenerator from "./CodeGenerator.js";
 import {parseRules, transformText} from "./Driver.js";
+import EchoErrorListener from "./ErrorHandling.ts";
 
-const codeGenerator = new CodeGenerator();
 let functions = [];
-
-class EchoErrorListener extends BaseErrorListener {
-    output = document.getElementById("outputText");
-
-    syntaxError(
-        recognizer,
-        offendingSymbol,
-        line,
-        column,
-        msg,
-        e)
-    {
-        this.output.value += `Syntax error at ${line}:${column}: ${msg}\n`;
-    }
-}
 
 const view = new EditorView({
     doc: defaultText,
@@ -61,13 +44,10 @@ document.getElementById("downloadBtn").onclick = () => {
 
 document.getElementById("parseBtn").onclick = () => {
     const code = view.state.doc.toString();
-    const errorListener = new EchoErrorListener();
-    const handler = (line, column, msg) => {
-        document.getElementById("outputText").value += `Syntax error at ${line}:${column}: ${msg}\n`;
-    };
+    const errorListener = new EchoErrorListener(code, document.getElementById("outputText"));
 
     document.getElementById("outputText").value = "";
-    functions = parseRules(code, errorListener, handler);
+    functions = parseRules(code, errorListener);
 
     Metro.notify.create("If any, errors written in Output field.", "Rules parsed");
 }
@@ -91,6 +71,9 @@ document.getElementById("transformBtn").onclick = () => {
 
 document.getElementById("generateJSBtn").onclick = () => {
     if (functions.length === 0) return;
-    document.getElementById("outputText").value = codeGenerator.render(functions);
+    const code = [`import {collectMatches, buildString} from "./Skrypt.js"`, ``];
+    for (const func of functions)
+        code.push(...func.emitJS());
+    document.getElementById("outputText").value = code.join('\n');
     Metro.notify.create("Function was composed in Output field.", "Generated");
 }

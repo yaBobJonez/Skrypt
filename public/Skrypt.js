@@ -58,13 +58,16 @@ export function collectMatches(input, rules) {
 
 export function buildString(input, slots) {
     let output = "";
+    let removedPrevUpper = false;
     for (let i = 0; i < slots.length; i++) {
         const slot = slots[i];
         if (typeof slot === "number") continue;
-        if (slot === undefined) output += input[i];
-        else {
+        if (slot === undefined) {
+            removedPrevUpper = false;
+            output += input[i];
+        } else {
             const {end, match, replace} = slot;
-            if (match === match.toLowerCase())
+            if (match === match.toLowerCase() && !removedPrevUpper)
                 output += replace;
             else if (replace.length < 2)
                 output += replace.toUpperCase();
@@ -75,6 +78,7 @@ export function buildString(input, slots) {
                 else
                     output += replace.toUpperCase();
             }
+            removedPrevUpper = (replace === '' && match !== match.toLowerCase());
         }
     }
     return output;

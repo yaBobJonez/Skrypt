@@ -1,0 +1,141 @@
+# Latin Russian
+# =============
+
+@ unifiedE		= true
+@ vowelVariant	= 0		# ú-ë, ü-ë, iu-ë, iu-io
+@ altHushing	= false	# ş-š, š-ŝ
+@ assimilation	= false
+@ reduction		= false
+
+% unvoiced	=	<дт><чц>|жч|з<чш>|с<шщ>|<кпстфхцчшщ>
+% fC		=	<бвгджзклмнпрстфхцчшщ>
+
+? assimilation:
+	/конечно/	→	конешно
+	нарочно/	→	нарошно
+	скучн		→	скушн
+	/пустячн	→	пустяшн
+	/скворечн	→	скворешн
+	/яичниц		→	яишниц
+	/девичн		→	девишн
+	/[н?]его/,
+	[в?с]его/,
+	/[с]его[дн],
+	[ч]его/		→	ево
+	[и]ч[то]/,
+	/ч[то]		→	ш
+;
+? reduction:
+	[с]тс[к]			→	∅
+	[с]ть[с]			→	∅
+	[с]т[<нлгбмц>]		→	∅
+	[н]т[ств|ск|<цгш>]	→	∅
+	[ш]т[ц]				→	∅
+	[с]к[ск]			→	∅
+	[н]д[ск|шт|ц|ш]		→	∅
+	[з]д[<нкц>]			→	∅
+	[р]д[ц|ч]			→	∅
+	[р]г[ск]			→	∅
+	в[ств]				→	∅
+	л[нц]				→	∅
+;
+
+! stage
+
+а	→	a
+б[ь?]/,
+б[{unvoiced}]	→	p	? assimilation
+б				→	b
+в[ь?]/,
+в[{unvoiced}]	→	f	? assimilation
+в				→	v
+г[ь?]/,
+г[{unvoiced}]	→	k	? assimilation
+г				→	g
+д[ч]			→	č	? assimilation & altHushing
+д[ч]			→	ç	? assimilation
+д[ц]			→	c	? assimilation
+д[ь?]/,
+д[{unvoiced}]	→	t	? assimilation
+д				→	d
+[{fC}|й]е	→	e	? ~unifiedE
+е			→	je	? ~unifiedE
+е			→	e
+[{fC}]ё		→	io	? vowelVariant >= 3
+[й]ё		→	o	? vowelVariant >= 3
+ё			→	jo	? vowelVariant >= 3
+[{fC}|й]ё	→	ë	? ~unifiedE
+ё			→	jë	? ~unifiedE
+ё			→	ë
+жч				→	ŝŝ	? assimilation & altHushing
+жч				→	šš	? assimilation
+ж[ь?]/,
+ж[{unvoiced}]	→	š	? assimilation & altHushing
+ж[ь?]/,
+ж[{unvoiced}]	→	ş	? assimilation
+ж				→	ž	? altHushing
+ж				→	ᶎ
+з[ж]	→	ž	? assimilation & altHushing
+з[ж]	→	ᶎ	? assimilation
+з[ч]	→	ŝ	? assimilation & altHushing
+з[ч]	→	š	? assimilation
+з[ш]	→	š	? assimilation & altHushing
+з[ш]	→	ş	? assimilation
+з[ь?]/,
+з[{unvoiced}]	→	s	? assimilation
+з				→	z
+[<жшц>]и	→	y
+и			→	i
+й	→	j
+к[<бгджз>]	→	g	? assimilation
+к			→	k
+л	→	l
+м	→	m
+н	→	n
+о	→	o
+п[<бгджз>]	→	b	? assimilation
+п			→	p
+р	→	r
+с[ж]	→	ž	? assimilation & altHushing
+с[ж]	→	ᶎ	? assimilation
+с[ш]	→	š	? assimilation & altHushing
+с[ш]	→	ş	? assimilation
+с<чщ>	→	ŝŝ	? assimilation & altHushing
+с<чщ>	→	šš	? assimilation
+с[<бгджз>]	→	z	? assimilation
+с			→	s
+т[ч]	→	č	? assimilation & altHushing
+т[ч]	→	ç	? assimilation
+т[ц]	→	c	? assimilation
+тс		→	c	? assimilation
+т[<бгджз>]	→	d ? assimilation
+т			→	t
+у	→	u
+ф[<бгджз>]	→	v	? assimilation
+ф			→	f
+х	→	h
+ц	→	c
+ч	→	č	? altHushing
+ч	→	ç
+ш[ч]		→	ŝ	? assimilation & altHushing
+ш[ч]		→	š	? assimilation
+ш[<бгджз>]	→	ž	? assimilation & altHushing
+ш[<бгджз>]	→	ᶎ	? assimilation
+ш			→	š	? altHushing
+ш			→	ş
+щ	→	ŝ	? altHushing
+щ	→	š
+ъ	→	∅
+ы	→	y
+ь	→	\u0301
+э	→	e
+[{fC}]ю		→   ü	? vowelVariant = 1
+[{fC}]ю		→   iu	? vowelVariant >= 2
+[{fC}]ю		→   ú
+[й]ю		→   u
+ю			→   ju
+[{fC}]я		→   ä	? vowelVariant = 1
+[{fC}]я		→   ia	? vowelVariant >= 2
+[{fC}]я		→   á
+[й]я		→   a
+я			→   ja
